@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 interface Player {
   id: number;
   name: string;
-  photo_url?: string;
+  photo_url?: string | null;
   rating?: number;
   score: number;
   is_winner: boolean;
