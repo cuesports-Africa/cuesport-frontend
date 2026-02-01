@@ -10,6 +10,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/home',
+        destination: '/player',
+        permanent: true,
+      },
+      {
+        source: '/home/:path*',
+        destination: '/player/:path*',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
