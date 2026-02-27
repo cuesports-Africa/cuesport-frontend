@@ -292,7 +292,13 @@ export default function StatusPage() {
   const fetchStatus = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/status`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/status`,
+        {
+          headers: {
+            Accept: "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
+        }
       );
       if (!response.ok) {
         throw new Error("Failed to fetch status");

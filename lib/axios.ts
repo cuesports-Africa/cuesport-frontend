@@ -5,6 +5,7 @@ const axiosInstance = axios.create({
     headers: {
         'X-Requested-With': 'XMLHttpRequest',
         'Accept': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
     },
     withCredentials: true,
     withXSRFToken: true,

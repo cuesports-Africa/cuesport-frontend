@@ -26,6 +26,7 @@ class ApiClient {
     const headers: HeadersInit = {
       "Content-Type": "application/json",
       Accept: "application/json",
+      "ngrok-skip-browser-warning": "true",
       ...options.headers,
     };
 
@@ -213,6 +214,7 @@ export const organizerApi = {
       method: "POST",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        "ngrok-skip-browser-warning": "true",
       },
       body: formData,
     }).then((res) => res.json()),
@@ -626,6 +628,7 @@ export const profileApi = {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
       },
       body: formData,
     });
@@ -993,6 +996,7 @@ export const matchesApi = {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
+        "ngrok-skip-browser-warning": "true",
       },
       body: formData,
     });
