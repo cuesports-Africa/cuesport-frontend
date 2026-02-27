@@ -454,7 +454,7 @@ function TournamentsContent() {
                   <ChevronRight className="h-3.5 w-3.5" />
                 </button>
                 <p className="px-2 py-2 text-xs text-muted-foreground">
-                  <Link href="/auth/signin" className="text-primary hover:underline">
+                  <Link href="/tournaments" className="text-primary hover:underline">
                     Sign in
                   </Link>{" "}
                   to see your tournaments

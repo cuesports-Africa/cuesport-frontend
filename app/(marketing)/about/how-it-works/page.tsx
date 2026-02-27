@@ -131,7 +131,7 @@ export default function HowItWorksPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild>
-              <Link href="/auth/register">
+              <Link href="/tournaments">
                 Create Account
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>

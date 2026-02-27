@@ -12,14 +12,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Logo } from "./logo";
-import { mainNavItems, authNavItems } from "@/config/navigation";
+import { mainNavItems } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 
-interface MobileNavProps {
-  isLoggedIn?: boolean;
-}
-
-export function MobileNav({ isLoggedIn = false }: MobileNavProps) {
+export function MobileNav() {
   const [open, setOpen] = React.useState(false);
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
 
@@ -111,28 +107,13 @@ export function MobileNav({ isLoggedIn = false }: MobileNavProps) {
             ))}
           </div>
 
-          {/* Auth Buttons */}
+          {/* CTA */}
           <div className="border-t p-4 space-y-2">
-            {isLoggedIn ? (
-              <Link href="/player" onClick={() => setOpen(false)}>
-                <Button className="w-full bg-primary hover:bg-primary/90">
-                  Dashboard
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Link href="/auth/signin" onClick={() => setOpen(false)}>
-                  <Button variant="outline" className="w-full">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link href="/auth/register" onClick={() => setOpen(false)}>
-                  <Button className="w-full bg-primary hover:bg-primary/90">
-                    Register
-                  </Button>
-                </Link>
-              </>
-            )}
+            <Link href="/tournaments" onClick={() => setOpen(false)}>
+              <Button className="w-full bg-primary hover:bg-primary/90">
+                View Tournaments
+              </Button>
+            </Link>
           </div>
         </nav>
       </SheetContent>

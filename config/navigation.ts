@@ -23,13 +23,3 @@ export const mainNavItems: NavItem[] = [
   },
 ];
 
-export const authNavItems: NavItem[] = [
-  {
-    title: "Sign In",
-    href: "/auth/signin",
-  },
-  {
-    title: "Register",
-    href: "/auth/register",
-  },
-];

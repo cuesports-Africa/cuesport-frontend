@@ -132,7 +132,7 @@ export default function Home() {
                   className="bg-gold hover:bg-gold/90 text-primary font-semibold h-12 px-6"
                   asChild
                 >
-                  <Link href="/auth/register">
+                  <Link href="/tournaments">
                     Get started
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -432,7 +432,7 @@ export default function Home() {
               className="bg-gold hover:bg-gold/90 text-primary"
               asChild
             >
-              <Link href="/auth/register">
+              <Link href="/tournaments">
                 Get Started Free
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>

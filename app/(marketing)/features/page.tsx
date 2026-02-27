@@ -233,7 +233,7 @@ export default function FeaturesPage() {
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button size="lg" asChild>
-                <Link href="/auth/register">
+                <Link href="/tournaments">
                   Start Free
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -365,7 +365,7 @@ export default function FeaturesPage() {
               className="bg-gold hover:bg-gold/90 text-primary"
               asChild
             >
-              <Link href="/auth/register">
+              <Link href="/tournaments">
                 Get Started Free
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>

@@ -21,8 +21,6 @@ import { cn } from "@/lib/utils";
 export function Header() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = React.useState(false);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-
   React.useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -30,12 +28,6 @@ export function Header() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Check if user is logged in
-  React.useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    setIsLoggedIn(!!token);
   }, []);
 
   return (
@@ -118,34 +110,18 @@ export function Header() {
             </NavigationMenuList>
           </NavigationMenu>
 
-          {/* Right Side - Auth Buttons */}
+          {/* Right Side - CTA */}
           <div className="flex items-center gap-2">
-            {/* Desktop Auth */}
             <div className="hidden lg:flex items-center gap-2">
-              {isLoggedIn ? (
-                <Link href="/player">
-                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                    Dashboard
-                  </Button>
-                </Link>
-              ) : (
-                <>
-                  <Link href="/auth/signin">
-                    <Button variant="ghost" className="text-foreground">
-                      Sign In
-                    </Button>
-                  </Link>
-                  <Link href="/auth/register">
-                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                      Get Started
-                    </Button>
-                  </Link>
-                </>
-              )}
+              <Link href="/tournaments">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                  View Tournaments
+                </Button>
+              </Link>
             </div>
 
             {/* Mobile Menu Trigger */}
-            <MobileNav isLoggedIn={isLoggedIn} />
+            <MobileNav />
           </div>
         </div>
       </div>

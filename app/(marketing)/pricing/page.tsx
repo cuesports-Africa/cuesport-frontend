@@ -1,14 +1,14 @@
 import { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowRight, HelpCircle, Check, Zap, Crown, Building2 } from "lucide-react";
+import { ArrowRight, HelpCircle, Check, Users, Trophy, Zap, Crown, Building2 } from "lucide-react";
 import { JsonLd } from "@/components/seo/json-ld";
-import { plansList, formatPrice, formatEntryFee, type Plan, type PlanCode } from "@/config/plans";
+import { pricingTiers, formatTierPrice, entryFeeRate, type PricingTier } from "@/config/plans";
 
 export const metadata: Metadata = {
-  title: "Pricing - Tournament Management Plans",
+  title: "Pricing - Per-Tournament Fees",
   description:
-    "Simple, transparent pricing for pool tournament organizers. Start free with 2 tournaments/month. Pro plan at $12/mo for unlimited tournaments with M-Pesa entry fee collection.",
+    "Simple per-tournament pricing for pool tournament organizers. Pay only when you host. Starting at KES 500 for up to 16 players. M-Pesa payments supported.",
   keywords: [
     "pool tournament software pricing",
     "tournament management cost",
@@ -16,11 +16,12 @@ export const metadata: Metadata = {
     "pool league software",
     "bracket generator pricing",
     "Elo rating system",
+    "pay per tournament",
   ],
   openGraph: {
     title: "Pricing - CueSports Africa Tournament Management",
     description:
-      "Start free, scale as you grow. No hidden fees. M-Pesa & card payments supported.",
+      "Pay per tournament, not per month. No subscriptions. M-Pesa & card payments supported.",
     url: "https://cuesports.africa/pricing",
   },
   alternates: {
@@ -28,58 +29,48 @@ export const metadata: Metadata = {
   },
 };
 
-const planIcons: Record<PlanCode, typeof Zap> = {
-  starter: Zap,
-  pro: Crown,
-  business: Building2,
+const tierIcons: Record<string, typeof Zap> = {
+  Small: Zap,
+  Medium: Users,
+  Large: Trophy,
+  Major: Crown,
+  Championship: Building2,
 };
 
 const faqs = [
   {
-    question: "Can I switch plans anytime?",
-    answer: "Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate any charges.",
+    question: "How does per-tournament pricing work?",
+    answer: "You pay a one-time fee when you create a tournament, based on the maximum number of players you set. No monthly subscriptions or hidden fees.",
   },
   {
     question: "What payment methods do you accept?",
-    answer: "We accept M-Pesa, Visa, Mastercard, and bank transfers. All payments are processed securely through Paystack.",
+    answer: "We accept M-Pesa, Visa, Mastercard, and bank transfers. All payments are processed securely through our payment partners.",
   },
   {
     question: "How do entry fee collections work?",
-    answer: "Players pay entry fees through M-Pesa or card. Funds are held securely and transferred to your account after the tournament ends, minus processing fees.",
+    answer: `Players pay entry fees through M-Pesa or card. We charge ${entryFeeRate.percentage}% processing fee on collected entry fees. Funds are transferred to your account after the tournament ends.`,
   },
   {
-    question: "Is there a contract or commitment?",
-    answer: "No contracts. All plans are month-to-month and you can cancel anytime. We believe in earning your business every month.",
+    question: "What if my tournament gets cancelled?",
+    answer: "If you cancel before registration opens, you get a full refund. After registration opens, contact our support team for assistance.",
   },
   {
-    question: "What happens to my data if I cancel?",
-    answer: "Your tournament history and player data remain accessible for 90 days after cancellation. You can export everything before that period ends.",
+    question: "Can I change the max players after creating a tournament?",
+    answer: "You can increase the max players (and pay the difference) before the tournament starts. Decreasing is not supported after creation.",
   },
   {
-    question: "Do you offer discounts for annual billing?",
-    answer: "Yes! Pay annually and get 2 months free on Pro and Business plans. Contact us for custom enterprise arrangements.",
+    question: "Do you offer discounts for frequent organizers?",
+    answer: "Yes! Organizers who host 5+ tournaments per month get a 10% discount. Contact us for custom arrangements for federations and leagues.",
   },
 ];
 
-function getCtaHref(plan: Plan): string {
-  if (plan.code === "business") return "/about/contact?plan=business";
-  if (plan.amount === 0) return "/auth/register";
-  return `/auth/register?plan=${plan.code}`;
-}
-
-function getCtaText(plan: Plan): string {
-  if (plan.code === "business") return "Contact Sales";
-  if (plan.amount === 0) return "Get Started Free";
-  return "Start Free Trial";
-}
-
 export default function PricingPage() {
-  const jsonLdOffers = plansList.map((plan) => ({
+  const jsonLdOffers = pricingTiers.map((tier) => ({
     "@type": "Offer",
-    name: plan.name,
-    description: plan.description,
-    price: plan.amount / 100,
-    priceCurrency: plan.currency,
+    name: `${tier.name} Tournament`,
+    description: tier.label,
+    price: tier.amount / 100,
+    priceCurrency: tier.currency,
     availability: "https://schema.org/InStock",
   }));
 
@@ -100,11 +91,11 @@ export default function PricingPage() {
       <section className="bg-gradient-to-b from-primary/5 to-background pt-20 pb-8">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl lg:text-6xl font-bold mb-4">
-            Pricing that scales with you
+            Pay per tournament, not per month
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Whether you&apos;re running your first tournament or managing a national
-            series, we have a plan that fits.
+            No subscriptions. No monthly fees. Just pay when you host a tournament,
+            based on the number of players.
           </p>
         </div>
       </section>
@@ -117,24 +108,23 @@ export default function PricingPage() {
               Simple Pricing
             </span>
             <h2 className="text-3xl lg:text-5xl font-bold mt-6 mb-4">
-              Start free, scale as you grow
+              Choose your tournament size
             </h2>
             <p className="text-lg text-muted-foreground">
-              No hidden fees. No credit card required to start. Upgrade when
-              you&apos;re ready.
+              One-time fee per tournament. All features included at every tier.
+              Pay via M-Pesa or card.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
-            {plansList.map((plan) => {
-              const Icon = planIcons[plan.code];
-              const isHighlighted = plan.isPopular;
-              const entryFeeText = formatEntryFee(plan);
+          <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-5 max-w-7xl mx-auto">
+            {pricingTiers.map((tier) => {
+              const Icon = tierIcons[tier.name] || Zap;
+              const isHighlighted = tier.isPopular;
 
               return (
                 <div
-                  key={plan.code}
-                  className={`relative rounded-2xl p-8 transition-all duration-300 ${
+                  key={tier.name}
+                  className={`relative rounded-2xl p-6 transition-all duration-300 ${
                     isHighlighted
                       ? "bg-primary text-primary-foreground scale-105 shadow-2xl shadow-primary/20 border-2 border-gold"
                       : "bg-card border hover:shadow-xl hover:border-primary/20"
@@ -148,61 +138,45 @@ export default function PricingPage() {
                     </div>
                   )}
 
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isHighlighted ? "bg-gold/20" : "bg-primary/10"}`}>
-                      <Icon className={`h-5 w-5 ${isHighlighted ? "text-gold" : "text-primary"}`} />
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${isHighlighted ? "bg-gold/20" : "bg-primary/10"}`}>
+                      <Icon className={`h-4 w-4 ${isHighlighted ? "text-gold" : "text-primary"}`} />
                     </div>
-                    <h3 className="text-xl font-bold">{plan.name}</h3>
+                    <h3 className="text-lg font-bold">{tier.name}</h3>
                   </div>
 
-                  <p className={`text-sm mb-6 ${isHighlighted ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                    {plan.description}
+                  <p className={`text-xs mb-4 ${isHighlighted ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                    {tier.label}
                   </p>
 
-                  <div className="mb-6">
-                    <span className="text-4xl font-bold">{formatPrice(plan)}</span>
-                    {plan.amount > 0 && (
-                      <span className={`text-sm ${isHighlighted ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                        /month
-                      </span>
-                    )}
+                  <div className="mb-4">
+                    <span className="text-3xl font-bold">{formatTierPrice(tier)}</span>
+                    <span className={`text-xs block mt-1 ${isHighlighted ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                      per tournament
+                    </span>
                   </div>
-
-                  {entryFeeText && (
-                    <div className={`text-xs mb-6 px-3 py-2 rounded-lg ${isHighlighted ? "bg-white/10 text-primary-foreground/80" : "bg-muted text-muted-foreground"}`}>
-                      Entry fee processing: {entryFeeText}
-                    </div>
-                  )}
 
                   <Button
                     asChild
-                    className={`w-full mb-8 ${isHighlighted ? "bg-gold hover:bg-gold/90 text-primary" : ""}`}
+                    className={`w-full mb-5 ${isHighlighted ? "bg-gold hover:bg-gold/90 text-primary" : ""}`}
                     variant={isHighlighted ? "default" : "outline"}
-                    size="lg"
+                    size="sm"
                   >
-                    <Link href={getCtaHref(plan)}>
-                      {getCtaText(plan)}
+                    <Link href="/tournaments">
+                      Get Started
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
 
-                  <div className="space-y-3">
-                    {plan.features.map((feature) => (
-                      <div key={feature} className="flex items-start gap-3">
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${isHighlighted ? "bg-gold/20" : "bg-green-100"}`}>
-                          <Check className={`h-3 w-3 ${isHighlighted ? "text-gold" : "text-green-600"}`} />
+                  <div className="space-y-2">
+                    {tier.features.slice(0, 5).map((feature) => (
+                      <div key={feature} className="flex items-start gap-2">
+                        <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${isHighlighted ? "bg-gold/20" : "bg-green-100"}`}>
+                          <Check className={`h-2.5 w-2.5 ${isHighlighted ? "text-gold" : "text-green-600"}`} />
                         </div>
-                        <span className={`text-sm ${isHighlighted ? "text-primary-foreground/90" : ""}`}>
+                        <span className={`text-xs ${isHighlighted ? "text-primary-foreground/90" : ""}`}>
                           {feature}
                         </span>
-                      </div>
-                    ))}
-                    {plan.limitations.map((limitation) => (
-                      <div key={limitation} className="flex items-start gap-3">
-                        <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <span className="text-xs text-muted-foreground">–</span>
-                        </div>
-                        <span className="text-sm text-muted-foreground">{limitation}</span>
                       </div>
                     ))}
                   </div>
@@ -211,7 +185,16 @@ export default function PricingPage() {
             })}
           </div>
 
-          <div className="mt-16 text-center">
+          {/* Entry fee processing note */}
+          <div className="mt-12 text-center">
+            <div className="inline-flex items-center gap-2 bg-muted/50 px-6 py-3 rounded-xl">
+              <span className="text-sm text-muted-foreground">
+                Entry fee processing: <strong className="text-foreground">{entryFeeRate.percentage}%</strong> on collected player entry fees via M-Pesa/card
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-12 text-center">
             <p className="text-muted-foreground mb-4">
               Need a custom plan for your federation or large-scale events?
             </p>
@@ -228,15 +211,15 @@ export default function PricingPage() {
             <div className="flex flex-wrap justify-center items-center gap-8 lg:gap-16 text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Check className="h-5 w-5 text-green-500" />
-                <span className="text-sm">No credit card required</span>
+                <span className="text-sm">No subscriptions</span>
               </div>
               <div className="flex items-center gap-2">
                 <Check className="h-5 w-5 text-green-500" />
-                <span className="text-sm">14-day free trial on paid plans</span>
+                <span className="text-sm">Pay per tournament</span>
               </div>
               <div className="flex items-center gap-2">
                 <Check className="h-5 w-5 text-green-500" />
-                <span className="text-sm">Cancel anytime</span>
+                <span className="text-sm">All features included</span>
               </div>
               <div className="flex items-center gap-2">
                 <Check className="h-5 w-5 text-green-500" />
@@ -280,12 +263,12 @@ export default function PricingPage() {
             </h2>
             <p className="text-lg opacity-80 max-w-2xl mx-auto mb-8">
               Join hundreds of organizers already using CueSports Africa to run
-              professional pool tournaments.
+              professional pool tournaments. Pay only when you play.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button size="lg" className="bg-gold hover:bg-gold/90 text-primary" asChild>
-                <Link href="/auth/register">
-                  Get Started Free
+                <Link href="/tournaments">
+                  Create a Tournament
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

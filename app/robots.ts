@@ -11,8 +11,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           "/api/",
           "/dashboard/",
-          "/auth/verify-email",
-          "/auth/reset-password",
           "/_next/",
           "/private/",
         ],

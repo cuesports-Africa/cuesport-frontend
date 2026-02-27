@@ -18,7 +18,7 @@ const footerLinks = {
       { label: "Find Players", href: "/players/search" },
       { label: "Rankings", href: "/rankings" },
       { label: "Rating System", href: "/rankings/rating-system" },
-      { label: "My Dashboard", href: "/home" },
+      { label: "Tournaments", href: "/tournaments" },
     ],
   },
   news: {
