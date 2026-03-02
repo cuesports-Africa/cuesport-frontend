@@ -146,15 +146,38 @@ export function Footer() {
                 </div>
                 info@cuesports.africa
               </a>
+
+              {/* inline phone numbers for easy click-to-call on mobile devices */}
+              <div className="text-sm font-medium text-muted-foreground">Phone Numbers:</div>
+              <div className="flex gap-3 w-full ">
               <a
-                href="tel:+254700000000"
+                href="tel:+254110407501"
                 className="flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-electric transition-colors group"
               >
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-white/5 border border-white/10 group-hover:bg-electric/10 group-hover:border-electric/20 transition-colors shadow-sm">
                   <Phone className="h-4 w-4 text-foreground/70 group-hover:text-electric transition-colors" />
                 </div>
-                +254 700 000 000
+                0110407501
               </a>
+              <a
+                href="tel:+254705708643"
+                className="flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-electric transition-colors group"
+              >
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-white/5 border border-white/10 group-hover:bg-electric/10 group-hover:border-electric/20 transition-colors shadow-sm">
+                  <Phone className="h-4 w-4 text-foreground/70 group-hover:text-electric transition-colors" />
+                </div>
+                0705708643
+              </a>
+              <a
+                href="tel:+254748023691"
+                className="flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-electric transition-colors group"
+              >
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-white/5 border border-white/10 group-hover:bg-electric/10 group-hover:border-electric/20 transition-colors shadow-sm">
+                  <Phone className="h-4 w-4 text-foreground/70 group-hover:text-electric transition-colors" />
+                </div>
+                0748023691
+              </a>
+              </div>
               <div className="flex items-center gap-3 text-sm font-medium text-muted-foreground">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-white/5 border border-white/10 shadow-sm">
                   <MapPin className="h-4 w-4 text-foreground/70" />
