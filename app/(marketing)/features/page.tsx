@@ -203,6 +203,26 @@ export default function FeaturesPage() {
           ],
         }}
       />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: "https://cuesports.africa",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Features",
+              item: "https://cuesports.africa/features",
+            },
+          ],
+        }}
+      />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden hero-gradient py-20 lg:py-28">

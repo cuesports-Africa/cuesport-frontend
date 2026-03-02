@@ -139,6 +139,26 @@ export default function CustomersPage() {
           },
         }}
       />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: "https://cuesports.africa",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Customers",
+              item: "https://cuesports.africa/customers",
+            },
+          ],
+        }}
+      />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-primary/5 to-background py-20 lg:py-28">

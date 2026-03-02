@@ -1,6 +1,17 @@
 import { MetadataRoute } from "next";
+import { serverFetch } from "@/lib/api-server";
 
 const BASE_URL = "https://cuesports.africa";
+
+interface SitemapArticle {
+  slug: string;
+  updated_at: string;
+}
+
+interface SitemapPlayer {
+  id: number;
+  updated_at?: string;
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages
@@ -139,23 +150,41 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // TODO: Fetch dynamic pages from API when available
-  // const tournaments = await fetchTournaments();
-  // const players = await fetchPlayers();
-  // const dynamicPages = [
-  //   ...tournaments.map(t => ({
-  //     url: `${BASE_URL}/tournaments/${t.slug}`,
-  //     lastModified: new Date(t.updated_at),
-  //     changeFrequency: 'daily' as const,
-  //     priority: 0.7,
-  //   })),
-  //   ...players.map(p => ({
-  //     url: `${BASE_URL}/players/${p.slug}`,
-  //     lastModified: new Date(p.updated_at),
-  //     changeFrequency: 'weekly' as const,
-  //     priority: 0.6,
-  //   })),
-  // ];
+  // Dynamic pages — fetch from API (gracefully degrade on failure)
+  let articlePages: MetadataRoute.Sitemap = [];
+  let playerPages: MetadataRoute.Sitemap = [];
 
-  return [...staticPages];
+  try {
+    const articlesRes = await serverFetch<{
+      data: SitemapArticle[];
+    }>("/articles?per_page=100", { revalidate: 3600 });
+
+    articlePages = articlesRes.data.map((article) => ({
+      url: `${BASE_URL}/news/${article.slug}`,
+      lastModified: new Date(article.updated_at),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }));
+  } catch {
+    // API unavailable — skip dynamic articles
+  }
+
+  try {
+    const playersRes = await serverFetch<{
+      data: SitemapPlayer[];
+    }>("/players/rankings?per_page=200", { revalidate: 3600 });
+
+    playerPages = playersRes.data.map((player) => ({
+      url: `${BASE_URL}/players/${player.id}`,
+      lastModified: player.updated_at
+        ? new Date(player.updated_at)
+        : new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }));
+  } catch {
+    // API unavailable — skip dynamic players
+  }
+
+  return [...staticPages, ...articlePages, ...playerPages];
 }

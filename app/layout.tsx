@@ -80,6 +80,9 @@ export const metadata: Metadata = {
     creator: siteConfig.twitterHandle,
     images: [siteConfig.ogImage],
   },
+  verification: {
+    google: "wE3gZSX-16lXepHvBUhrMuLOBvIIw7-HX0dy9Gh06VA",
+  },
   robots: {
     index: true,
     follow: true,

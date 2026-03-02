@@ -86,6 +86,40 @@ export default function PricingPage() {
           offers: jsonLdOffers,
         }}
       />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: faq.answer,
+            },
+          })),
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: "https://cuesports.africa",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Pricing",
+              item: "https://cuesports.africa/pricing",
+            },
+          ],
+        }}
+      />
 
       {/* Hero */}
       <section className="relative overflow-hidden hero-gradient py-20 lg:py-28">

@@ -433,6 +433,7 @@ function TournamentsContent() {
 
   return (
     <div className="min-h-screen bg-background">
+      <h1 className="sr-only">Pool Tournaments — Browse & Register</h1>
       {/* Main Content */}
       <div className="max-w-5xl mx-auto px-4 py-6">
         <div className="flex gap-5">

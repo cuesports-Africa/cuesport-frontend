@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { PricingCards } from "@/components/pricing-cards";
+import { JsonLd } from "@/components/seo/json-ld";
 import {
   ArrowRight,
   Check,
@@ -177,6 +178,29 @@ const howItWorks = [
 export default function Home() {
   return (
     <div className="min-h-screen">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          name: "CueSports Africa — Tournament Infrastructure for African Pool",
+          description:
+            "The complete platform for running professional pool tournaments. Brackets, ratings, payments, and rankings.",
+          url: "https://cuesports.africa",
+          about: {
+            "@type": "SportsOrganization",
+            name: "CueSports Africa",
+            sport: "Cue Sports",
+            url: "https://cuesports.africa",
+            description:
+              "Africa's #1 pool tournament platform. Professional tournament management, Elo ratings, and M-Pesa payments.",
+            areaServed: {
+              "@type": "Continent",
+              name: "Africa",
+            },
+          },
+        }}
+      />
+
       {/* ─── Hero Section ─── */}
       <section className="relative min-h-[90vh] overflow-hidden hero-gradient flex items-center">
         {/* Background orbs */}

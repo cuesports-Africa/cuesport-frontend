@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -9,6 +10,30 @@ import {
   CheckCircle,
   Zap,
 } from "lucide-react";
+import { JsonLd } from "@/components/seo/json-ld";
+
+export const metadata: Metadata = {
+  title: "How It Works - Get Started in 4 Steps",
+  description:
+    "Learn how CueSports Africa works. Create an account, find tournaments, compete with live scoring, and build your Elo rating — all in 4 simple steps.",
+  keywords: [
+    "how to join pool tournament",
+    "pool tournament registration",
+    "Elo rating system pool",
+    "cuesports africa sign up",
+    "African pool tournaments",
+    "live scoring pool",
+  ],
+  openGraph: {
+    title: "How CueSports Africa Works - 4 Simple Steps",
+    description:
+      "From signing up to winning championships. Create an account, find tournaments, compete live, and build your Elo rating.",
+    url: "https://cuesports.africa/about/how-it-works",
+  },
+  alternates: {
+    canonical: "https://cuesports.africa/about/how-it-works",
+  },
+};
 
 const steps = [
   {
@@ -64,6 +89,48 @@ const steps = [
 export default function HowItWorksPage() {
   return (
     <div className="min-h-screen">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          name: "How to Get Started on CueSports Africa",
+          description:
+            "From signing up to winning championships — here's your path to becoming a ranked pool player in Africa.",
+          step: steps.map((s, i) => ({
+            "@type": "HowToStep",
+            position: i + 1,
+            name: s.title,
+            text: s.description,
+          })),
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: "https://cuesports.africa",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "About",
+              item: "https://cuesports.africa/about",
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: "How It Works",
+              item: "https://cuesports.africa/about/how-it-works",
+            },
+          ],
+        }}
+      />
+
       {/* Hero */}
       <section className="relative overflow-hidden hero-gradient py-20 lg:py-28">
         <div className="container mx-auto px-4 text-center relative z-10">
