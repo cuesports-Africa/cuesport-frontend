@@ -17,7 +17,7 @@ const siteConfig = {
   description:
     "Africa's premier pool tournament and player management platform. Host tournaments, track Elo ratings, collect entry fees via M-Pesa, and compete from community to national level.",
   url: "https://cuesports.africa",
-  ogImage: "https://cuesports.africa/og-image.jpg",
+  ogImage: "https://cuesports.africa/og-image.png",
   twitterHandle: "@cuesportsafrica",
   email: "info@cuesports.africa",
   phone: "+254700000000",

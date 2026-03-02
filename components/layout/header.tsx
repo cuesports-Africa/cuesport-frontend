@@ -34,15 +34,15 @@ export function Header() {
 
   return (
     <header
-      className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-500",
-        isScrolled
-          ? "glass-dark shadow-lg shadow-black/20 py-2 border-b border-white/5"
-          : "bg-transparent py-4"
-      )}
+      className="sticky top-0 z-50 w-full py-3"
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between rounded-full bg-background/40 backdrop-blur-md border border-white/10 px-6 py-3 shadow-sm transition-all">
+        <div className={cn(
+          "flex items-center justify-between rounded-full backdrop-blur-md border px-6 py-3 transition-all duration-300",
+          isScrolled
+            ? "bg-background/80 border-white/10 shadow-lg shadow-black/20"
+            : "bg-background/40 border-white/10 shadow-sm"
+        )}>
           {/* Logo */}
           <div className="flex items-center">
             <Logo variant="white" showTagline={false} />
