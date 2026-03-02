@@ -16,7 +16,7 @@ export function useEcho() {
       setEcho(instance);
       setIsConnected(true);
     }
-
+///ignore-next-line
     return () => {
       // Don't disconnect on unmount - we want to keep the connection alive
     };
