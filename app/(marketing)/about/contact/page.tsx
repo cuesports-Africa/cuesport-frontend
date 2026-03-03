@@ -9,9 +9,14 @@ export const metadata: Metadata = {
   keywords: [
     "contact cuesports africa",
     "pool tournament support",
+    "snooker tournament support",
     "tournament organizer help",
     "cuesports africa phone",
     "cuesports africa email",
+    "pool tournament inquiry Kenya",
+    "snooker partnership Africa",
+    "pool federation contact",
+    "host pool tournament Africa",
   ],
   openGraph: {
     title: "Contact Us — CueSports Africa",

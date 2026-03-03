@@ -5,11 +5,14 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { RegisterSW } from "@/components/pwa/register-sw";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { Providers } from "@/components/providers";
+import { WebVitals } from "@/components/analytics/web-vitals";
 
 const sora = Sora({
   variable: "--font-sora",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
+  preload: true,
 });
 
 const siteConfig = {
@@ -35,18 +38,68 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   keywords: [
-    "pool tournaments",
+    // Short-tail (high volume)
+    "pool",
+    "snooker",
+    "billiards",
+    "8-ball",
+    "9-ball",
+    "pool Africa",
+    "snooker Africa",
+    "pool Kenya",
+    "snooker Kenya",
+    "pool tournament",
+    "snooker tournament",
+    "pool rankings",
+    "pool league",
+    "cue sports",
+    "pool table",
+    "pool player",
+    "pool club",
+    // Mid-tail (moderate competition)
+    "pool tournaments Africa",
+    "snooker tournaments Africa",
     "billiards Africa",
-    "8-ball tournaments",
-    "tournament management software",
+    "pool tournaments Kenya",
+    "snooker tournaments Kenya",
+    "pool tournaments Nairobi",
     "pool rankings Kenya",
+    "pool rankings Africa",
+    "snooker rankings Africa",
+    "pool league Africa",
+    "pool league Kenya",
+    "8-ball tournament Africa",
+    "9-ball tournament Africa",
+    "pool competition Africa",
+    "snooker competition Kenya",
+    "pool club near me",
+    "pool hall Kenya",
     "Elo rating pool",
-    "M-Pesa tournament payments",
-    "pool league management",
-    "cue sports Africa",
-    "professional pool platform",
-    "tournament bracket generator",
     "pool player rankings",
+    "tournament bracket generator",
+    "pool tournament app",
+    // Long-tail (low competition, high intent)
+    "how to join pool tournament Africa",
+    "pool tournament registration online",
+    "pool tournament management software",
+    "snooker tournament management app",
+    "M-Pesa pool tournament payments",
+    "online pool tournament registration Kenya",
+    "pool tournament bracket generator free",
+    "Elo rating system billiards",
+    "professional pool platform Africa",
+    "pool tournament organizer software",
+    "live pool match scoring app",
+    "pool player rating system Africa",
+    "snooker league management software",
+    "pool tournament results Africa",
+    "pool tournament schedule Kenya",
+    "best pool players Africa",
+    "top snooker players Kenya",
+    "pool tournament prize money Africa",
+    "how to organize pool tournament",
+    "pool tournament rules 8-ball",
+    "cuesports Africa platform",
   ],
   authors: [{ name: siteConfig.name, url: siteConfig.url }],
   creator: siteConfig.name,
@@ -173,6 +226,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Providers>
+          <WebVitals />
           {children}
         </Providers>
         <RegisterSW />

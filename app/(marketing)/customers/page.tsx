@@ -10,10 +10,16 @@ export const metadata: Metadata = {
     "120+ pool halls, 25+ leagues, and 3 national federations trust CueSports Africa. Read testimonials from organizers across Kenya, Tanzania, Uganda, and more.",
   keywords: [
     "pool tournament software reviews",
+    "snooker tournament software reviews",
     "CueSports Africa testimonials",
     "tournament management success stories",
     "pool hall management Kenya",
+    "pool club software Africa",
+    "snooker club management",
     "billiards league software Africa",
+    "pool organizer reviews Kenya",
+    "best pool tournament app Africa",
+    "pool federation software",
   ],
   openGraph: {
     title: "Customer Success Stories - CueSports Africa",

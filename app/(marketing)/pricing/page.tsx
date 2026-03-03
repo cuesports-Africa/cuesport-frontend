@@ -11,12 +11,18 @@ export const metadata: Metadata = {
     "Simple per-tournament pricing for pool tournament organizers. Pay only when you host. Starting at KES 500 for up to 16 players. M-Pesa payments supported.",
   keywords: [
     "pool tournament software pricing",
+    "snooker tournament software cost",
     "tournament management cost",
     "M-Pesa tournament payments",
     "pool league software",
+    "snooker league software pricing",
     "bracket generator pricing",
     "Elo rating system",
     "pay per tournament",
+    "pool tournament entry fee collection",
+    "how much does pool tournament software cost",
+    "affordable pool tournament app Africa",
+    "free pool tournament software",
   ],
   openGraph: {
     title: "Pricing - CueSports Africa Tournament Management",

@@ -294,6 +294,7 @@ export default function Home() {
                   height={120}
                   className="h-10 md:h-12 w-auto object-contain"
                   priority
+                  fetchPriority="high"
                 />
               </div>
             </div>
