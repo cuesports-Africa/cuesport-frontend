@@ -2,8 +2,17 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Cookie Policy | CueSports Africa",
-  description: "CueSports Africa Cookie Policy",
+  title: "Cookie Policy",
+  description:
+    "CueSports Africa Cookie Policy. Learn about the cookies and tracking technologies we use on our platform.",
+  openGraph: {
+    title: "Cookie Policy — CueSports Africa",
+    description: "How we use cookies on CueSports Africa.",
+    url: "https://cuesports.africa/legal/cookies",
+  },
+  alternates: {
+    canonical: "https://cuesports.africa/legal/cookies",
+  },
 };
 
 export default function CookiePolicyPage() {

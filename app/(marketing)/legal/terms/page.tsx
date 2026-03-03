@@ -2,8 +2,17 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | CueSports Africa",
-  description: "CueSports Africa Terms of Service",
+  title: "Terms of Service",
+  description:
+    "CueSports Africa Terms of Service. Read the terms governing tournament participation, organizer accounts, entry fees, payments, and platform usage.",
+  openGraph: {
+    title: "Terms of Service — CueSports Africa",
+    description: "Terms governing your use of CueSports Africa.",
+    url: "https://cuesports.africa/legal/terms",
+  },
+  alternates: {
+    canonical: "https://cuesports.africa/legal/terms",
+  },
 };
 
 export default function TermsOfServicePage() {

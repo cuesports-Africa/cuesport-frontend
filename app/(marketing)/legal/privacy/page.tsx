@@ -2,8 +2,17 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | CueSports Africa",
-  description: "CueSports Africa Privacy Policy",
+  title: "Privacy Policy",
+  description:
+    "CueSports Africa Privacy Policy. Learn how we collect, use, and protect your personal data including tournament registrations, M-Pesa payments, and player profiles.",
+  openGraph: {
+    title: "Privacy Policy — CueSports Africa",
+    description: "How we handle your data on CueSports Africa.",
+    url: "https://cuesports.africa/legal/privacy",
+  },
+  alternates: {
+    canonical: "https://cuesports.africa/legal/privacy",
+  },
 };
 
 export default function PrivacyPolicyPage() {

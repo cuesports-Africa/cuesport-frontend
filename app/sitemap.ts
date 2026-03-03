@@ -129,6 +129,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.6,
     },
+    // Availability
+    {
+      url: `${BASE_URL}/availability`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    // Status
+    {
+      url: `${BASE_URL}/status`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.4,
+    },
     // Legal
     {
       url: `${BASE_URL}/legal/terms`,
