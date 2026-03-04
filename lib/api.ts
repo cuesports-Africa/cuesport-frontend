@@ -717,7 +717,7 @@ export interface LeaderboardPlayer {
   nickname?: string | null;
   photo_url?: string | null;
   rating: number;
-  rating_category: string;
+  rating_category: string | { value: string; label: string };
   wins: number;
   total_matches: number;
   tournaments_won: number;

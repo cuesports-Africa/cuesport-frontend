@@ -547,8 +547,8 @@ function RankingsContent() {
                             )}>
                               {player.name}
                             </span>
-                            <span className={cn("px-1.5 py-0.5 rounded text-[10px] uppercase flex-shrink-0", getCategoryBadgeClass(player.rating_category))}>
-                              {player.rating_category}
+                            <span className={cn("px-1.5 py-0.5 rounded text-[10px] uppercase flex-shrink-0", getCategoryBadgeClass(typeof player.rating_category === "object" ? player.rating_category.value : player.rating_category))}>
+                              {typeof player.rating_category === "object" ? player.rating_category.label : player.rating_category}
                             </span>
                           </div>
                           <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-muted-foreground">
