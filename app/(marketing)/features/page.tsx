@@ -42,6 +42,8 @@ export const metadata: Metadata = {
     "9-ball tournament software",
     "pool club management",
     "automatic pool seeding",
+    "cue sport tournament software",
+    "cue sport management app",
   ],
   openGraph: {
     title: "Features - CueSports Africa Tournament Management",

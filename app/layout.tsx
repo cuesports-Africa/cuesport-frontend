@@ -100,6 +100,12 @@ export const metadata: Metadata = {
     "how to organize pool tournament",
     "pool tournament rules 8-ball",
     "cuesports Africa platform",
+    "cue sport",
+    "cue sport Africa",
+    "cue sport Kenya",
+    "cue sport tournament",
+    "cue sport rankings",
+    "cue sport league",
   ],
   authors: [{ name: siteConfig.name, url: siteConfig.url }],
   creator: siteConfig.name,
@@ -135,6 +141,10 @@ export const metadata: Metadata = {
   },
   verification: {
     google: "wE3gZSX-16lXepHvBUhrMuLOBvIIw7-HX0dy9Gh06VA",
+    // yandex: "YOUR_YANDEX_CODE", // Get from https://webmaster.yandex.com/
+    other: {
+      // "msvalidate.01": "YOUR_BING_CODE", // Get from https://www.bing.com/webmasters
+    },
   },
   robots: {
     index: true,
@@ -181,16 +191,28 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="CueSports" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="application-name" content="CueSports Africa" />
+        {/* Bing & multi-engine directives */}
+        <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large" />
+        {/* Geo meta tags for Bing/DuckDuckGo local SEO */}
+        <meta name="geo.region" content="KE" />
+        <meta name="geo.placename" content="Nairobi" />
+        <meta name="geo.position" content="-1.2921;36.8219" />
+        <meta name="ICBM" content="-1.2921, 36.8219" />
         <JsonLd
           data={{
             "@context": "https://schema.org",
-            "@type": "Organization",
+            "@type": ["Organization", "SportsOrganization"],
             name: siteConfig.name,
             url: siteConfig.url,
             logo: `${siteConfig.url}/logo.png`,
             description: siteConfig.description,
             email: siteConfig.email,
             telephone: siteConfig.phone,
+            sport: "Billiards",
+            areaServed: {
+              "@type": "Continent",
+              name: "Africa",
+            },
             address: {
               "@type": "PostalAddress",
               addressLocality: siteConfig.address.city,

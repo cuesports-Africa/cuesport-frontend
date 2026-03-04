@@ -32,6 +32,8 @@ export const metadata: Metadata = {
     "how to play competitive pool",
     "pool tournament for beginners Africa",
     "how to get pool ranking",
+    "cue sport registration",
+    "cue sport platform Africa",
   ],
   openGraph: {
     title: "How CueSports Africa Works - 4 Simple Steps",

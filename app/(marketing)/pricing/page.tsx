@@ -23,6 +23,8 @@ export const metadata: Metadata = {
     "how much does pool tournament software cost",
     "affordable pool tournament app Africa",
     "free pool tournament software",
+    "cue sport software pricing",
+    "cue sport tournament cost",
   ],
   openGraph: {
     title: "Pricing - CueSports Africa Tournament Management",

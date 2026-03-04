@@ -20,6 +20,8 @@ export const metadata: Metadata = {
     "pool organizer reviews Kenya",
     "best pool tournament app Africa",
     "pool federation software",
+    "cue sport platform reviews",
+    "cue sport app Africa",
   ],
   openGraph: {
     title: "Customer Success Stories - CueSports Africa",

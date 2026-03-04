@@ -24,6 +24,8 @@ export const metadata: Metadata = {
     "pool player ratings",
     "snooker player ratings Africa",
     "pool leaderboard Kenya",
+    "cue sport rankings Africa",
+    "cue sport leaderboard",
   ],
   openGraph: {
     title: "Player Rankings — CueSports Africa",

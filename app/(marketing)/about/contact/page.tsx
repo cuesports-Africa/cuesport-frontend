@@ -17,6 +17,8 @@ export const metadata: Metadata = {
     "snooker partnership Africa",
     "pool federation contact",
     "host pool tournament Africa",
+    "cue sport contact",
+    "cue sport support Africa",
   ],
   openGraph: {
     title: "Contact Us — CueSports Africa",

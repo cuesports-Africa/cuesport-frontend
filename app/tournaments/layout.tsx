@@ -27,6 +27,8 @@ export const metadata: Metadata = {
     "pool tournament schedule Africa",
     "pool tournament results",
     "live pool tournament",
+    "cue sport tournament Africa",
+    "cue sport competition",
   ],
   openGraph: {
     title: "Pool Tournaments — CueSports Africa",
