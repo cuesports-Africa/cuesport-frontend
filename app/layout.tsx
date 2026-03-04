@@ -141,10 +141,8 @@ export const metadata: Metadata = {
   },
   verification: {
     google: "wE3gZSX-16lXepHvBUhrMuLOBvIIw7-HX0dy9Gh06VA",
-    // yandex: "YOUR_YANDEX_CODE", // Get from https://webmaster.yandex.com/
-    other: {
-      // "msvalidate.01": "YOUR_BING_CODE", // Get from https://www.bing.com/webmasters
-    },
+    yandex: "265f97cd0ed2af0a",
+    other: {},
   },
   robots: {
     index: true,
