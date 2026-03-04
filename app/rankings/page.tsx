@@ -533,7 +533,7 @@ function RankingsContent() {
                               "text-[11px] font-bold",
                               player.country_rank <= 3 ? "text-electric" : "text-primary"
                             )}>
-                              {player.name.split(" ").map((n) => n.charAt(0)).slice(0, 2).join("")}
+                              {(player.name || "??").split(" ").map((n) => n.charAt(0)).slice(0, 2).join("")}
                             </span>
                           )}
                         </div>
