@@ -711,6 +711,42 @@ export interface RankingsParams {
   per_page?: number;
 }
 
+export interface LeaderboardPlayer {
+  id: number;
+  name: string;
+  nickname?: string | null;
+  photo_url?: string | null;
+  rating: number;
+  rating_category: string;
+  wins: number;
+  total_matches: number;
+  tournaments_won: number;
+  country_rank: number;
+  location?: string | null;
+  country?: {
+    id: number;
+    name: string;
+    code: string;
+  };
+}
+
+export interface LeaderboardResponse {
+  data: LeaderboardPlayer[];
+  meta: {
+    has_more: boolean;
+    next_cursor: number | null;
+    per_page: number;
+    rank_type: string;
+  };
+}
+
+export interface LeaderboardParams {
+  country_id: number;
+  gender?: "male" | "female";
+  per_page?: number;
+  after?: number;
+}
+
 export const playerApi = {
   get: (id: number) => api.get(`/players/${id}`),
 
@@ -746,6 +782,17 @@ export const playerApi = {
     const queryString = searchParams.toString();
     return api.get<RankingsResponse>(
       `/players/rankings${queryString ? `?${queryString}` : ""}`
+    );
+  },
+
+  leaderboard: (params: LeaderboardParams) => {
+    const searchParams = new URLSearchParams();
+    searchParams.set("country_id", String(params.country_id));
+    if (params.gender) searchParams.set("gender", params.gender);
+    if (params.per_page) searchParams.set("per_page", String(params.per_page));
+    if (params.after) searchParams.set("after", String(params.after));
+    return api.get<LeaderboardResponse>(
+      `/players/leaderboard?${searchParams.toString()}`
     );
   },
 };

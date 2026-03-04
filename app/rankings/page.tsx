@@ -33,10 +33,13 @@ import {
   RankingsResponse,
   RankingsParams,
   CountryRankingsResponse,
+  LeaderboardPlayer,
+  LeaderboardResponse,
 } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 type Tab = "players" | "countries";
+type Gender = "male" | "female";
 type PlayerSortMetric = "rating" | "wins" | "tournaments_won" | "total_matches";
 
 const playerSortOptions: { value: PlayerSortMetric; label: string; shortLabel: string }[] = [
@@ -103,6 +106,18 @@ function RankingsContent() {
     searchParams.get("page") ? parseInt(searchParams.get("page")!) : 1
   );
   const [searchQuery, setSearchQuery] = useState("");
+  const [gender, setGender] = useState<Gender>(
+    (searchParams.get("gender") as Gender) || "male"
+  );
+
+  // Leaderboard state (cursor-based)
+  const [leaderboardPlayers, setLeaderboardPlayers] = useState<LeaderboardPlayer[]>([]);
+  const [leaderboardCursor, setLeaderboardCursor] = useState<number | null>(null);
+  const [leaderboardHasMore, setLeaderboardHasMore] = useState(false);
+  const [leaderboardLoadingMore, setLeaderboardLoadingMore] = useState(false);
+
+  // Use leaderboard endpoint when a country is selected
+  const useLeaderboard = activeTab === "players" && !!countryId;
 
   // Countries list for filter dropdown
   const { data: countriesData } = useSWR("countries", () => locationApi.countries());
@@ -125,16 +140,35 @@ function RankingsContent() {
   if (regionId) playerParams.region_id = regionId;
   if (category && category !== "all") playerParams.category = category;
 
-  // Player rankings data
+  // Player rankings data (old endpoint — used when no country selected)
   const {
     data: playersData,
     error: playersError,
     isLoading: playersLoading,
     mutate: mutatePlayer,
   } = useSWR<RankingsResponse>(
-    activeTab === "players" ? `rankings-${JSON.stringify(playerParams)}` : null,
+    activeTab === "players" && !useLeaderboard ? `rankings-${JSON.stringify(playerParams)}` : null,
     () => playerApi.rankings(playerParams),
     { revalidateOnFocus: false, keepPreviousData: true }
+  );
+
+  // Leaderboard data (new endpoint — used when country is selected)
+  const {
+    data: leaderboardData,
+    error: leaderboardError,
+    isLoading: leaderboardLoading,
+    mutate: mutateLeaderboard,
+  } = useSWR<LeaderboardResponse>(
+    useLeaderboard ? `leaderboard-${countryId}-${gender}` : null,
+    () => playerApi.leaderboard({ country_id: countryId!, gender, per_page: 25 }),
+    {
+      revalidateOnFocus: false,
+      onSuccess: (data) => {
+        setLeaderboardPlayers(data.data);
+        setLeaderboardCursor(data.meta.next_cursor);
+        setLeaderboardHasMore(data.meta.has_more);
+      },
+    }
   );
 
   // Country rankings data (always sorted by top_10_avg)
@@ -156,6 +190,34 @@ function RankingsContent() {
 
   const rankedCountries = countriesRankingData?.data || [];
 
+  // Load more leaderboard players (cursor-based)
+  const handleLoadMore = async () => {
+    if (!countryId || !leaderboardCursor || leaderboardLoadingMore) return;
+    setLeaderboardLoadingMore(true);
+    try {
+      const data = await playerApi.leaderboard({
+        country_id: countryId,
+        gender,
+        per_page: 25,
+        after: leaderboardCursor,
+      });
+      setLeaderboardPlayers((prev) => [...prev, ...data.data]);
+      setLeaderboardCursor(data.meta.next_cursor);
+      setLeaderboardHasMore(data.meta.has_more);
+    } catch {
+      // silently fail, user can retry
+    } finally {
+      setLeaderboardLoadingMore(false);
+    }
+  };
+
+  // Reset leaderboard when gender or country changes
+  useEffect(() => {
+    setLeaderboardPlayers([]);
+    setLeaderboardCursor(null);
+    setLeaderboardHasMore(false);
+  }, [gender, countryId]);
+
   // Update URL when filters change
   useEffect(() => {
     const params = new URLSearchParams();
@@ -167,12 +229,13 @@ function RankingsContent() {
       if (regionId) params.set("region_id", String(regionId));
       if (category !== "all") params.set("category", category);
       if (currentPage > 1) params.set("page", String(currentPage));
+      if (countryId && gender !== "male") params.set("gender", gender);
     }
 
     const queryString = params.toString();
     const newUrl = queryString ? `/rankings?${queryString}` : "/rankings";
     router.replace(newUrl, { scroll: false });
-  }, [activeTab, playerSortBy, countryId, regionId, category, currentPage, router]);
+  }, [activeTab, playerSortBy, countryId, regionId, category, currentPage, gender, router]);
 
   // Reset region when country changes
   useEffect(() => {
@@ -185,6 +248,7 @@ function RankingsContent() {
     setRegionId(undefined);
     setCategory("all");
     setCurrentPage(1);
+    setGender("male");
   };
 
   const hasPlayerActiveFilters =
@@ -305,6 +369,34 @@ function RankingsContent() {
 
           {/* Main Content Area */}
           <main className="flex-1 min-w-0">
+            {/* Gender Toggle (shown when country is selected) */}
+            {activeTab === "players" && countryId && (
+              <div className="flex items-center gap-1 mb-3 p-1 rounded-xl bg-muted/30 border border-border/20 w-fit">
+                <button
+                  onClick={() => setGender("male")}
+                  className={cn(
+                    "px-4 py-1.5 rounded-lg text-xs font-semibold transition-all",
+                    gender === "male"
+                      ? "bg-electric text-[#030e10] shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Men
+                </button>
+                <button
+                  onClick={() => setGender("female")}
+                  className={cn(
+                    "px-4 py-1.5 rounded-lg text-xs font-semibold transition-all",
+                    gender === "female"
+                      ? "bg-electric text-[#030e10] shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Women
+                </button>
+              </div>
+            )}
+
             {/* Filter Row with Country dropdown and count */}
             {activeTab === "players" && (
               <div className="flex items-center justify-between mb-3">
@@ -364,7 +456,9 @@ function RankingsContent() {
                 </div>
 
                 <span className="text-xs text-muted-foreground">
-                  {playersTotal.toLocaleString()} players
+                  {useLeaderboard
+                    ? `${leaderboardPlayers.length}${leaderboardHasMore ? "+" : ""} players`
+                    : `${playersTotal.toLocaleString()} players`}
                 </span>
               </div>
             )}
@@ -378,8 +472,136 @@ function RankingsContent() {
               </div>
             )}
 
-            {/* Players Content */}
-            {activeTab === "players" && (
+            {/* Players Content — Leaderboard mode (country selected) */}
+            {activeTab === "players" && useLeaderboard && (
+              <>
+                {leaderboardError && (
+                  <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-xs mb-4">
+                    {leaderboardError instanceof Error ? leaderboardError.message : "Failed to load leaderboard"}
+                    <button className="ml-2 underline" onClick={() => mutateLeaderboard()}>Try again</button>
+                  </div>
+                )}
+
+                {leaderboardLoading && leaderboardPlayers.length === 0 ? (
+                  <div className="flex items-center justify-center py-20">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  </div>
+                ) : leaderboardPlayers.length === 0 ? (
+                  <div className="text-center py-20 bg-card rounded-lg border">
+                    <Users className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                    <h3 className="font-medium text-sm mb-1">No {gender === "female" ? "women" : "men"} players found</h3>
+                    <p className="text-muted-foreground text-xs">
+                      No players match your current filters.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="card-dark rounded-2xl border border-border/20 overflow-hidden shadow-sm">
+                    {leaderboardPlayers
+                      .filter((p) =>
+                        searchQuery
+                          ? p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            p.nickname?.toLowerCase().includes(searchQuery.toLowerCase())
+                          : true
+                      )
+                      .map((player, idx, arr) => (
+                      <div
+                        key={player.id}
+                        className={cn(
+                          "flex items-center px-4 py-3 hover:bg-muted/30 transition-colors group",
+                          idx !== arr.length - 1 && "border-b border-border/20 hover:border-border/30"
+                        )}
+                      >
+                        {/* Rank */}
+                        <div className="w-10 text-center flex-shrink-0">
+                          <span className={cn(
+                            "text-sm font-bold",
+                            player.country_rank <= 3 ? "text-electric glow-text text-lg" : "text-foreground"
+                          )}>
+                            {player.country_rank}
+                          </span>
+                        </div>
+
+                        {/* Avatar */}
+                        <div className={cn(
+                          "w-10 h-10 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 mx-3 border shadow-sm",
+                          player.country_rank <= 3 ? "border-electric/50 bg-electric/10" : "bg-primary/10 border-border/30"
+                        )}>
+                          {player.photo_url ? (
+                            <Image src={player.photo_url} alt={player.name} width={40} height={40} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className={cn(
+                              "text-[11px] font-bold",
+                              player.country_rank <= 3 ? "text-electric" : "text-primary"
+                            )}>
+                              {player.name.split(" ").map((n) => n.charAt(0)).slice(0, 2).join("")}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Player Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className={cn(
+                              "text-sm font-semibold truncate transition-colors",
+                              player.country_rank <= 3 ? "text-foreground" : "text-foreground group-hover:text-electric"
+                            )}>
+                              {player.name}
+                            </span>
+                            <span className={cn("px-1.5 py-0.5 rounded text-[10px] uppercase flex-shrink-0", getCategoryBadgeClass(player.rating_category))}>
+                              {player.rating_category}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-muted-foreground">
+                            {player.location && <span>{player.location}</span>}
+                            {player.country?.code && (
+                              <ReactCountryFlag
+                                countryCode={player.country.code}
+                                svg
+                                style={{ width: "1.2em", height: "1.2em", marginLeft: "4px" }}
+                                title={player.country.name}
+                              />
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Rating */}
+                        <div className="text-right flex-shrink-0 ml-4">
+                          <span className={cn(
+                            "font-bold font-mono",
+                            player.country_rank <= 3 ? "text-electric text-lg" : "text-[15px] text-foreground"
+                          )}>
+                            {player.rating.toLocaleString()}
+                          </span>
+                          <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Rating</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Load More */}
+                {leaderboardHasMore && (
+                  <div className="flex items-center justify-center mt-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleLoadMore}
+                      disabled={leaderboardLoadingMore}
+                      className="rounded-xl border-border/20 text-xs"
+                    >
+                      {leaderboardLoadingMore ? (
+                        <><Loader2 className="h-3 w-3 animate-spin mr-2" /> Loading...</>
+                      ) : (
+                        "Load More"
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Players Content — Rankings mode (all countries) */}
+            {activeTab === "players" && !useLeaderboard && (
               <>
                 {playersError && (
                   <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-xs mb-4">
