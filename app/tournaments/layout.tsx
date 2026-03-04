@@ -4,9 +4,9 @@ import { Footer } from "@/components/layout/footer";
 import { JsonLd } from "@/components/seo/json-ld";
 
 export const metadata: Metadata = {
-  title: "Tournaments - Browse & Register",
+  title: "Cue Sport Tournaments — Browse & Register",
   description:
-    "Browse upcoming pool tournaments across Africa. Filter by format, location, and entry fee. Register and pay online via M-Pesa or card.",
+    "Browse upcoming pool, snooker, and billiards tournaments across Africa. Register online, view live brackets, and pay entry fees via M-Pesa or card.",
   keywords: [
     "pool tournaments Africa",
     "snooker tournaments Africa",
@@ -29,11 +29,25 @@ export const metadata: Metadata = {
     "live pool tournament",
     "cue sport tournament Africa",
     "cue sport competition",
+    "cuesport africa",
+    "cuesports africa",
+    "billiards africa",
+    "snooker africa",
+    "pool tournament africa",
+    "African pool tournament",
+    "cue sport tournament",
+    "8 ball pool africa",
+    "pool league africa",
+    "African billiards",
+    "pool player rankings africa",
+    "cue sport events Kenya",
+    "pool events Africa",
+    "billiards tournament directory",
   ],
   openGraph: {
-    title: "Pool Tournaments — CueSports Africa",
+    title: "Cue Sport Tournaments — CueSports Africa",
     description:
-      "Browse, register, and compete in pool tournaments across Africa. Live brackets, M-Pesa payments, Elo ratings.",
+      "Browse, register, and compete in pool, snooker, and billiards tournaments across Africa. Live brackets, M-Pesa payments, Elo ratings.",
     url: "https://cuesports.africa/tournaments",
   },
   alternates: {
@@ -52,14 +66,35 @@ export default function TournamentsLayout({
         data={{
           "@context": "https://schema.org",
           "@type": "CollectionPage",
-          name: "Pool Tournaments — CueSports Africa",
+          name: "Cue Sport Tournaments — CueSports Africa",
           description:
-            "Browse and register for pool tournaments across Africa.",
+            "Browse and register for pool, snooker, and billiards tournaments across Africa.",
           url: "https://cuesports.africa/tournaments",
           isPartOf: {
             "@type": "WebSite",
             name: "CueSports Africa",
             url: "https://cuesports.africa",
+          },
+          about: {
+            "@type": "Thing",
+            name: "Cue Sports Tournaments in Africa",
+          },
+          provider: {
+            "@type": "SportsOrganization",
+            name: "CueSports Africa",
+            url: "https://cuesports.africa",
+            sport: "Billiards",
+          },
+          mainEntity: {
+            "@type": "ItemList",
+            name: "Cue Sport Tournaments in Africa",
+            description:
+              "Browse upcoming pool, snooker, and billiards tournaments across Africa on CueSports Africa.",
+            itemListOrder: "https://schema.org/ItemListUnordered",
+            itemListElement: {
+              "@type": "ListItem",
+              name: "SportsEvent",
+            },
           },
         }}
       />

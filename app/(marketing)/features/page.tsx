@@ -24,7 +24,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 export const metadata: Metadata = {
   title: "Features - Tournament Management Tools",
   description:
-    "Smart bracket generation, live match scoring, Elo rating system, M-Pesa entry fee collection, player notifications, and analytics. Everything for professional pool tournaments.",
+    "Powerful cue sport management tools: smart brackets, live scoring, Elo ratings, and M-Pesa payments. Everything you need for professional tournaments.",
   keywords: [
     "pool tournament bracket generator",
     "snooker tournament software",
@@ -44,6 +44,17 @@ export const metadata: Metadata = {
     "automatic pool seeding",
     "cue sport tournament software",
     "cue sport management app",
+    "cuesport africa",
+    "cuesports africa",
+    "billiards africa",
+    "snooker africa",
+    "pool tournament africa",
+    "pool tournament management",
+    "cue sport platform",
+    "8 ball pool africa",
+    "pool league africa",
+    "African pool tournament",
+    "cue sport tournament",
   ],
   openGraph: {
     title: "Features - CueSports Africa Tournament Management",

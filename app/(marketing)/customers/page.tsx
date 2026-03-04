@@ -7,7 +7,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 export const metadata: Metadata = {
   title: "Our Customers - Success Stories",
   description:
-    "120+ pool halls, 25+ leagues, and 3 national federations trust CueSports Africa. Read testimonials from organizers across Kenya, Tanzania, Uganda, and more.",
+    "120+ venues and 3 federations trust CueSports Africa for cue sport events. Read success stories from organizers across Kenya, Tanzania, and Uganda.",
   keywords: [
     "pool tournament software reviews",
     "snooker tournament software reviews",
@@ -22,6 +22,16 @@ export const metadata: Metadata = {
     "pool federation software",
     "cue sport platform reviews",
     "cue sport app Africa",
+    "cuesport africa",
+    "cuesports africa",
+    "billiards africa",
+    "snooker africa",
+    "pool tournament africa",
+    "pool league africa",
+    "African pool tournament",
+    "African billiards",
+    "8 ball pool africa",
+    "cue sport tournament",
   ],
   openGraph: {
     title: "Customer Success Stories - CueSports Africa",

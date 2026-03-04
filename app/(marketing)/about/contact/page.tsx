@@ -5,7 +5,7 @@ import ContactClient from "./contact-client";
 export const metadata: Metadata = {
   title: "Contact Us - Get in Touch",
   description:
-    "Contact CueSports Africa for tournament inquiries, partnerships, technical support, or general questions. Reach us via email, phone, or WhatsApp.",
+    "Contact CueSports Africa for cue sport tournament inquiries, partnerships, or technical support. Reach us via email, phone, or WhatsApp.",
   keywords: [
     "contact cuesports africa",
     "pool tournament support",
@@ -19,6 +19,16 @@ export const metadata: Metadata = {
     "host pool tournament Africa",
     "cue sport contact",
     "cue sport support Africa",
+    "cuesport africa",
+    "cuesports africa",
+    "billiards africa",
+    "snooker africa",
+    "pool tournament africa",
+    "8 ball pool africa",
+    "African pool tournament",
+    "African billiards",
+    "cue sport tournament",
+    "pool league africa",
   ],
   openGraph: {
     title: "Contact Us — CueSports Africa",

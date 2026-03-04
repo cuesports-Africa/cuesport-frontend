@@ -3,7 +3,7 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Platform Availability - Countries & Regions",
   description:
-    "See which African countries CueSports Africa is currently available in. We're expanding across the continent to bring professional pool tournaments to more players.",
+    "See where CueSports Africa is available for cue sport tournaments. We're expanding across the continent to bring pool and snooker events to more players.",
   keywords: [
     "cuesports africa countries",
     "pool tournaments Kenya",
@@ -21,6 +21,16 @@ export const metadata: Metadata = {
     "pool West Africa",
     "cue sport availability Africa",
     "cue sport countries",
+    "cuesport africa",
+    "cuesports africa",
+    "billiards africa",
+    "snooker africa",
+    "pool tournament africa",
+    "8 ball pool africa",
+    "African pool tournament",
+    "African billiards",
+    "pool league africa",
+    "cue sport tournament",
   ],
   openGraph: {
     title: "Platform Availability — CueSports Africa",

@@ -12,6 +12,7 @@ import {
   Loader2,
   RotateCcw,
   Users,
+  User,
   Globe,
   Trophy,
   Search,
@@ -499,8 +500,8 @@ function RankingsContent() {
                     {leaderboardPlayers
                       .filter((p) =>
                         searchQuery
-                          ? p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            p.nickname?.toLowerCase().includes(searchQuery.toLowerCase())
+                          ? (p.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            (p.nickname || "").toLowerCase().includes(searchQuery.toLowerCase())
                           : true
                       )
                       .map((player, idx, arr) => (
@@ -527,14 +528,12 @@ function RankingsContent() {
                           player.country_rank <= 3 ? "border-electric/50 bg-electric/10" : "bg-primary/10 border-border/30"
                         )}>
                           {player.photo_url ? (
-                            <Image src={player.photo_url} alt={player.name} width={40} height={40} className="w-full h-full object-cover" />
+                            <Image src={player.photo_url} alt={player.name || "Player"} width={40} height={40} className="w-full h-full object-cover" />
                           ) : (
-                            <span className={cn(
-                              "text-[11px] font-bold",
+                            <User className={cn(
+                              "h-5 w-5",
                               player.country_rank <= 3 ? "text-electric" : "text-primary"
-                            )}>
-                              {(player.name || "??").split(" ").map((n) => n.charAt(0)).slice(0, 2).join("")}
-                            </span>
+                            )} />
                           )}
                         </div>
 
@@ -545,7 +544,7 @@ function RankingsContent() {
                               "text-sm font-semibold truncate transition-colors",
                               player.country_rank <= 3 ? "text-foreground" : "text-foreground group-hover:text-electric"
                             )}>
-                              {player.name}
+                              {player.name || player.nickname || "Unknown Player"}
                             </span>
                             <span className={cn("px-1.5 py-0.5 rounded text-[10px] uppercase flex-shrink-0", getCategoryBadgeClass(typeof player.rating_category === "object" ? player.rating_category.value : player.rating_category))}>
                               {typeof player.rating_category === "object" ? player.rating_category.label : player.rating_category}
@@ -649,13 +648,18 @@ function RankingsContent() {
                         )}>
                           {player.photo_url ? (
                             <Image src={player.photo_url} alt={player.full_name} width={40} height={40} className="w-full h-full object-cover" />
-                          ) : (
+                          ) : player.first_name && player.last_name ? (
                             <span className={cn(
                               "text-[11px] font-bold",
                               player.rank <= 3 ? "text-electric transition-colors group-hover:text-electric" : "text-primary"
                             )}>
                               {player.first_name.charAt(0)}{player.last_name.charAt(0)}
                             </span>
+                          ) : (
+                            <User className={cn(
+                              "h-5 w-5",
+                              player.rank <= 3 ? "text-electric" : "text-primary"
+                            )} />
                           )}
                         </div>
 

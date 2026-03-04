@@ -8,7 +8,7 @@ import { pricingTiers, formatTierPrice, entryFeeRate, type PricingTier } from "@
 export const metadata: Metadata = {
   title: "Pricing - Per-Tournament Fees",
   description:
-    "Simple per-tournament pricing for pool tournament organizers. Pay only when you host. Starting at KES 500 for up to 16 players. M-Pesa payments supported.",
+    "Affordable cue sport tournament pricing — pay per event, no subscriptions. Starting at KES 500 for up to 16 players. M-Pesa and card payments supported.",
   keywords: [
     "pool tournament software pricing",
     "snooker tournament software cost",
@@ -25,6 +25,15 @@ export const metadata: Metadata = {
     "free pool tournament software",
     "cue sport software pricing",
     "cue sport tournament cost",
+    "cuesport africa",
+    "cuesports africa",
+    "billiards africa",
+    "snooker africa",
+    "pool tournament africa",
+    "pool league africa",
+    "8 ball pool africa",
+    "African pool tournament",
+    "cue sport tournament",
   ],
   openGraph: {
     title: "Pricing - CueSports Africa Tournament Management",

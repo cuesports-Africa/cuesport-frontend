@@ -6,7 +6,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 export const metadata: Metadata = {
   title: "Player Rankings & Leaderboards",
   description:
-    "View player rankings, Elo ratings, statistics, and leaderboards across Africa. Filter by country, region, rating category, and more.",
+    "Official cue sport player rankings and Elo leaderboards across Africa. Filter by country, region, and rating category for pool, snooker, and more.",
   keywords: [
     "pool player rankings Africa",
     "snooker player rankings Africa",
@@ -26,6 +26,16 @@ export const metadata: Metadata = {
     "pool leaderboard Kenya",
     "cue sport rankings Africa",
     "cue sport leaderboard",
+    "cuesport africa",
+    "cuesports africa",
+    "billiards africa",
+    "snooker africa",
+    "pool player rankings africa",
+    "cuesport africa rankings",
+    "8 ball pool africa",
+    "pool league africa",
+    "African billiards",
+    "cue sport tournament",
   ],
   openGraph: {
     title: "Player Rankings — CueSports Africa",

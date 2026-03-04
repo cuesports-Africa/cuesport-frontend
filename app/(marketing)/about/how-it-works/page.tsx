@@ -15,7 +15,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 export const metadata: Metadata = {
   title: "How It Works - Get Started in 4 Steps",
   description:
-    "Learn how CueSports Africa works. Create an account, find tournaments, compete with live scoring, and build your Elo rating — all in 4 simple steps.",
+    "Get started with cue sport tournaments in 4 easy steps. Create an account, find events, compete with live scoring, and build your Elo rating on CueSports Africa.",
   keywords: [
     "how to join pool tournament",
     "how to join snooker tournament",
@@ -34,6 +34,17 @@ export const metadata: Metadata = {
     "how to get pool ranking",
     "cue sport registration",
     "cue sport platform Africa",
+    "cuesport africa",
+    "cuesports africa",
+    "billiards africa",
+    "snooker africa",
+    "pool tournament africa",
+    "8 ball pool africa",
+    "African pool tournament",
+    "African billiards",
+    "cue sport tournament",
+    "pool player rankings africa",
+    "pool league africa",
   ],
   openGraph: {
     title: "How CueSports Africa Works - 4 Simple Steps",

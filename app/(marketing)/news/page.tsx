@@ -5,7 +5,7 @@ import NewsClient from "./news-client";
 export const metadata: Metadata = {
   title: "News & Updates - Tournament Coverage & Player Stories",
   description:
-    "Stay informed with the latest pool tournament coverage, player profiles, results, and announcements from across Africa. Updated daily.",
+    "Latest cue sport news from Africa — tournament results, player profiles, and community updates. Stay informed on pool, snooker, and billiards events.",
   keywords: [
     "pool tournament news Africa",
     "snooker tournament news Africa",
@@ -23,6 +23,17 @@ export const metadata: Metadata = {
     "9-ball tournament news",
     "cue sport news Africa",
     "cue sport tournament results",
+    "cuesport africa",
+    "cuesports africa",
+    "billiards africa",
+    "snooker africa",
+    "pool tournament africa",
+    "8 ball pool africa",
+    "African pool tournament",
+    "African billiards",
+    "cue sport tournament",
+    "pool player rankings africa",
+    "pool league africa",
   ],
   openGraph: {
     title: "News & Updates — CueSports Africa",
