@@ -3,7 +3,7 @@
   "short_name": "CueSports",
   "description": "Africa's premier pool tournament platform. Track rankings, find tournaments, compete.",
   "start_url": "/",
-  "display": "standalone",
+  "display": "browser",
   "background_color": "#0D1F22",
   "theme_color": "#004E86",
   "orientation": "portrait-primary",
@@ -31,6 +31,11 @@
       "url": "/tournaments"
     }
   ],
-  "related_applications": [],
-  "prefer_related_applications": false
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://api.cuesports.africa/downloads/cuesports-africa.apk"
+    }
+  ],
+  "prefer_related_applications": true
 }
