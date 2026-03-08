@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { PricingCards } from "@/components/pricing-cards";
 import { JsonLd } from "@/components/seo/json-ld";
+import { AppDownloadButton } from "@/components/app-download-button";
 import {
   ArrowRight,
   Check,
@@ -284,8 +285,7 @@ export default function Home() {
             {/* App Download Buttons */}
             <div className="flex items-center justify-center gap-3 mt-6">
               {/* Google Play / Android */}
-              <a
-                href="https://api.cuesports.africa/downloads/cuesports-africa.apk"
+              <AppDownloadButton
                 className="flex items-center gap-2.5 bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/30 rounded-xl px-5 py-2.5 transition-all group"
               >
                 <svg viewBox="0 0 24 24" className="h-6 w-6 flex-shrink-0" fill="none">
@@ -298,7 +298,7 @@ export default function Home() {
                   <div className="text-[9px] uppercase tracking-wider text-white/60 leading-none">Get it on</div>
                   <div className="text-sm font-semibold text-white leading-tight">Google Play</div>
                 </div>
-              </a>
+              </AppDownloadButton>
 
               {/* App Store / iOS — Coming Soon */}
               <div

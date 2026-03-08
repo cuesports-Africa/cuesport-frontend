@@ -4,7 +4,19 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, X, Smartphone } from "lucide-react";
 
-const APK_DOWNLOAD_URL = "https://api.cuesports.africa/downloads/cuesports-africa.apk";
+const APK_DIRECT_URL = "https://downloads.cuesports.africa/app-release.apk";
+const TRACK_URL = "https://api.cuesports.africa/api/analytics/app-downloads";
+
+function trackDownload() {
+  try {
+    const data = JSON.stringify({ source: "install_prompt" });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(TRACK_URL, data);
+    }
+  } catch {
+    // fire-and-forget — don't block the download
+  }
+}
 
 export function InstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
@@ -39,7 +51,8 @@ export function InstallPrompt() {
   }, []);
 
   const handleDownload = () => {
-    window.location.href = APK_DOWNLOAD_URL;
+    trackDownload();
+    window.location.href = APK_DIRECT_URL;
     setShowPrompt(false);
   };
 
