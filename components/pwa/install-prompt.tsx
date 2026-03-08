@@ -2,70 +2,53 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, X } from "lucide-react";
+import { Download, X, Smartphone } from "lucide-react";
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
+const APK_DOWNLOAD_URL = "https://api.cuesports.africa/downloads/cuesports-africa.apk";
 
 export function InstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
-    // Check if already installed
-    if (window.matchMedia("(display-mode: standalone)").matches) {
+    // Check if already installed (standalone or fullscreen mode)
+    if (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.matchMedia("(display-mode: fullscreen)").matches
+    ) {
       setIsInstalled(true);
       return;
     }
 
     // Check if dismissed recently
-    const dismissed = localStorage.getItem("pwa-install-dismissed");
+    const dismissed = localStorage.getItem("app-install-dismissed");
     if (dismissed) {
       const dismissedTime = parseInt(dismissed, 10);
-      // Show again after 7 days
       if (Date.now() - dismissedTime < 7 * 24 * 60 * 60 * 1000) {
         return;
       }
     }
 
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      // Delay showing prompt for better UX
-      setTimeout(() => setShowPrompt(true), 3000);
-    };
+    // Detect Android
+    const ua = navigator.userAgent.toLowerCase();
+    setIsAndroid(/android/.test(ua));
 
-    window.addEventListener("beforeinstallprompt", handler);
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
-    };
+    // Show prompt after a short delay for better UX
+    setTimeout(() => setShowPrompt(true), 3000);
   }, []);
 
-  const handleInstall = async () => {
-    if (!deferredPrompt) return;
-
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-
-    if (outcome === "accepted") {
-      setIsInstalled(true);
-    }
-
-    setDeferredPrompt(null);
+  const handleDownload = () => {
+    window.location.href = APK_DOWNLOAD_URL;
     setShowPrompt(false);
   };
 
   const handleDismiss = () => {
-    localStorage.setItem("pwa-install-dismissed", Date.now().toString());
+    localStorage.setItem("app-install-dismissed", Date.now().toString());
     setShowPrompt(false);
   };
 
-  if (isInstalled || !showPrompt || !deferredPrompt) {
+  if (isInstalled || !showPrompt || !isAndroid) {
     return null;
   }
 
@@ -74,12 +57,12 @@ export function InstallPrompt() {
       <div className="bg-card border shadow-lg rounded-xl p-4">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
-            <Download className="h-5 w-5 text-primary-foreground" />
+            <Smartphone className="h-5 w-5 text-primary-foreground" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-sm">Install CueSports</h3>
+            <h3 className="font-semibold text-sm">CueSports Africa App</h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Add to home screen for quick access
+              Get the full experience on your phone
             </p>
           </div>
           <button
@@ -91,11 +74,12 @@ export function InstallPrompt() {
         </div>
         <div className="flex gap-2 mt-3">
           <Button
-            onClick={handleInstall}
+            onClick={handleDownload}
             size="sm"
             className="flex-1"
           >
-            Install
+            <Download className="h-4 w-4 mr-1.5" />
+            Get the App
           </Button>
           <Button
             onClick={handleDismiss}

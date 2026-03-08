@@ -281,6 +281,40 @@ export default function Home() {
               </Link>
             </div>
 
+            {/* App Download Buttons */}
+            <div className="flex items-center justify-center gap-3 mt-6">
+              {/* Google Play / Android */}
+              <a
+                href="https://api.cuesports.africa/downloads/cuesports-africa.apk"
+                className="flex items-center gap-2.5 bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/30 rounded-xl px-5 py-2.5 transition-all group"
+              >
+                <svg viewBox="0 0 24 24" className="h-6 w-6 flex-shrink-0" fill="none">
+                  <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92z" fill="#4285F4"/>
+                  <path d="M17.556 8.243l-3.764 3.757 3.764 3.757 4.246-2.384a1.098 1.098 0 0 0 0-1.946l-4.246-2.184z" fill="#FBBC04"/>
+                  <path d="M3.609 1.814L13.792 12l3.764-3.757L5.7.472C5.267.237 4.776.15 4.303.253c-.29.063-.56.2-.694.561z" fill="#34A853"/>
+                  <path d="M13.792 12L3.61 22.186c.15.39.41.56.694.56.473.104.964.017 1.396-.218l11.856-6.771L13.792 12z" fill="#EA4335"/>
+                </svg>
+                <div className="text-left">
+                  <div className="text-[9px] uppercase tracking-wider text-white/60 leading-none">Get it on</div>
+                  <div className="text-sm font-semibold text-white leading-tight">Google Play</div>
+                </div>
+              </a>
+
+              {/* App Store / iOS — Coming Soon */}
+              <div
+                className="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-xl px-5 py-2.5 opacity-50 cursor-not-allowed relative"
+              >
+                <svg viewBox="0 0 24 24" className="h-6 w-6 flex-shrink-0 text-white/40" fill="currentColor">
+                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                </svg>
+                <div className="text-left">
+                  <div className="text-[9px] uppercase tracking-wider text-white/40 leading-none">Download on the</div>
+                  <div className="text-sm font-semibold text-white/40 leading-tight">App Store</div>
+                </div>
+                <span className="absolute -top-2 -right-2 bg-electric/90 text-[#030e10] text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide">Soon</span>
+              </div>
+            </div>
+
             {/* Partners Logo Strip */}
             <div className="mt-16 pt-10 border-t border-border/20 text-center animate-slide-up" style={{ animationDelay: "0.2s" }}>
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-6 label-caps">

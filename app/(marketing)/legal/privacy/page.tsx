@@ -184,8 +184,34 @@ export default function PrivacyPolicyPage() {
             <p className="mb-4">You can usually access, correct, or delete your personal data using your account settings and tools that we offer, but if you aren't able to do that, or you would like to contact us about one of the other rights, scroll down to How to Reach Us to find out how to reach us.</p>
             <p className="mb-4">Upon valid termination of your registration, your account will be anonymized. This means that your user name is changed to include just your first name and the first character of last name. The information on country and gender is kept in order not to distort any statistics and history. Your full last name and contact details, as well any other personal information other than competition-related data, will be deleted from our database.</p>
 
-            <h3 className="text-lg font-medium mt-6 mb-3">Delete your personal data</h3>
-            <p>If you want to delete your personal data, you can do so by sending a request to CueSports Africa support. We will then delete your personal data within 30 days.</p>
+            <h3 className="text-lg font-medium mt-6 mb-3">How to Delete Your Account</h3>
+            <p className="mb-2">You can delete your CueSports Africa account using either of the following methods:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li><strong>In the app:</strong> Go to Profile → Settings → Delete Account → Confirm</li>
+              <li><strong>By email:</strong> Send a request to <a href="mailto:support@cuesports.africa" className="text-primary hover:underline">support@cuesports.africa</a> with your registered phone number. We will process it within 48 hours.</li>
+            </ul>
+
+            <h3 className="text-lg font-medium mt-6 mb-3">What Gets Deleted</h3>
+            <p className="mb-2">When you delete your account, the following data is permanently removed:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Personal information (name, email, phone number, date of birth, gender)</li>
+              <li>Profile photo</li>
+              <li>Chat messages</li>
+              <li>Push notification tokens</li>
+              <li>Login credentials</li>
+            </ul>
+
+            <h3 className="text-lg font-medium mt-6 mb-3">What We Retain</h3>
+            <p className="mb-2">For competitive integrity and tournament record-keeping, we retain:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Match results and scores (anonymized)</li>
+              <li>Tournament participation history (anonymized)</li>
+              <li>Player ratings (anonymized)</li>
+            </ul>
+            <p>This data is kept in anonymized form and cannot be linked back to you.</p>
+
+            <h3 className="text-lg font-medium mt-6 mb-3">Data Deletion Contact</h3>
+            <p>If you have questions about data deletion, contact us at <a href="mailto:support@cuesports.africa" className="text-primary hover:underline">support@cuesports.africa</a>.</p>
           </section>
 
           <section>
@@ -213,7 +239,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <div className="mt-12 pt-8 border-t text-muted-foreground">
-            <p>Last updated: January 2025</p>
+            <p>Last updated: March 2026</p>
             <p className="mt-4">
               <Link href="/" className="text-primary hover:underline">← Back to Home</Link>
             </p>
