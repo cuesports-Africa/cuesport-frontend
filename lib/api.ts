@@ -171,6 +171,7 @@ export const authApi = {
     password_confirmation: string;
     first_name: string;
     last_name: string;
+    nickname: string;
     date_of_birth: string;
     gender: string;
     country_id: number;
@@ -186,6 +187,18 @@ export const authApi = {
   me: () => api.get<{ user: User }>("/auth/me"),
 
   logout: () => api.post<{ message: string }>("/auth/logout"),
+
+  resendVerification: (data: { email: string }) =>
+    api.post<{ message: string }>("/auth/resend-verification", data),
+
+  forgotPassword: (data: { email: string }) =>
+    api.post<{ message: string }>("/auth/forgot-password", data),
+
+  verifyResetCode: (data: { email: string; code: string }) =>
+    api.post<{ message: string; token: string }>("/auth/verify-reset-code", data),
+
+  resetPassword: (data: { email: string; token: string; password: string; password_confirmation: string }) =>
+    api.post<{ message: string }>("/auth/reset-password", data),
 };
 
 // ============================================
@@ -218,6 +231,17 @@ export const organizerApi = {
       },
       body: formData,
     }).then((res) => res.json()),
+
+  deleteLogo: () => api.delete<{ message: string }>("/organizer/logo"),
+
+  getStats: () => api.get<OrganizerStats>("/organizer/stats"),
+
+  getFinances: () => api.get<{
+    total_earned: number;
+    total_pending: number;
+    total_withdrawn: number;
+    currency: string;
+  }>("/organizer/finances"),
 };
 
 // ============================================
@@ -459,19 +483,20 @@ export const tournamentApi = {
 
   create: (data: {
     name: string;
-    description?: string;
-    format?: string;
-    max_participants: number;
-    entry_fee: number;
-    race_to: number;
-    finals_race_to?: number;
+    geographic_scope_id: number;
+    registration_closes_at: string;
     starts_at: string;
-    registration_deadline?: string;
-    registration_closes_at?: string;
-    venue_id?: number;
-    geographic_scope_id?: number;
+    max_players: number;
+    description?: string;
     venue_name?: string;
     venue_address?: string;
+    entry_fee?: number;
+    entry_fee_currency?: string;
+    race_to?: number;
+    finals_race_to?: number;
+    gender_restriction?: string;
+    winners_count?: number;
+    format?: string;
     type?: string;
   }) => api.post<{ message: string; tournament: Tournament }>("/tournaments", data),
 
@@ -503,8 +528,39 @@ export const tournamentApi = {
   start: (id: number) =>
     api.post<{ message: string; tournament: Tournament }>(`/tournaments/${id}/start`),
 
-  cancel: (id: number) =>
-    api.post<{ message: string; tournament: Tournament }>(`/tournaments/${id}/cancel`),
+  cancel: (id: number, data?: { reason?: string }) =>
+    api.post<{ message: string; tournament: Tournament }>(`/tournaments/${id}/cancel`, data),
+
+  canStart: (id: number) =>
+    api.get<{ can_start: boolean; issues: string[] }>(`/tournaments/${id}/can-start`),
+
+  bracket: (id: number) =>
+    api.get<{ bracket: unknown }>(`/tournaments/${id}/bracket`),
+
+  matches: (id: number, params?: { round?: number; status?: string; page?: number }) => {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) searchParams.set(key, String(value));
+      });
+    }
+    const qs = searchParams.toString();
+    return api.get<{ data: MatchDetail[]; meta: { current_page: number; last_page: number; total: number } }>(
+      `/tournaments/${id}/matches${qs ? `?${qs}` : ""}`
+    );
+  },
+
+  standings: (id: number) =>
+    api.get<{ standings: unknown[] }>(`/tournaments/${id}/standings`),
+
+  removeParticipant: (id: number, participantId: number) =>
+    api.delete<{ message: string }>(`/tournaments/${id}/participants/${participantId}`),
+
+  analytics: (id: number) =>
+    api.get<{ analytics: unknown }>(`/tournaments/${id}/analytics`),
+
+  revenue: (id: number) =>
+    api.get<{ revenue: unknown }>(`/tournaments/${id}/revenue`),
 
   // Player
   register: (id: number) =>

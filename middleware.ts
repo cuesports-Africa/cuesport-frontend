@@ -10,6 +10,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
+  // Rewrite organizer.cuesports.africa/* → /organizer/*
+  if (hostname.startsWith("organizer.")) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/organizer${url.pathname}`;
+    return NextResponse.rewrite(url);
+  }
+
   return NextResponse.next();
 }
 
