@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
     ArrowLeft, Mail, Lock, User, ArrowRight,
-    Calendar, Loader2, MapPin, AtSign, ChevronLeft, Check,
+    Calendar, Loader2, MapPin, AtSign, ChevronLeft, Check, CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Logo } from "@/components/layout/logo";
 import { authApi, locationApi, type GeographicUnit } from "@/lib/api";
+
+// Level labels for each depth in the hierarchy
+const LEVEL_LABELS: Record<string, string> = {
+    country: "Country",
+    region: "Region",
+    county: "County",
+    sub_county: "Constituency",
+    ward: "Ward",
+    community: "Community",
+};
+
+interface LocationLevel {
+    label: string;
+    options: GeographicUnit[];
+    selectedId: string;
+    loading: boolean;
+}
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -34,35 +51,97 @@ export default function RegisterPage() {
     // Step 2: Profile
     const [dateOfBirth, setDateOfBirth] = useState("");
     const [gender, setGender] = useState("");
-    const [countryId, setCountryId] = useState("");
-    const [regionId, setRegionId] = useState("");
+    const [nationalIdNumber, setNationalIdNumber] = useState("");
 
-    // Location data
-    const [countries, setCountries] = useState<GeographicUnit[]>([]);
-    const [regions, setRegions] = useState<GeographicUnit[]>([]);
+    // Dynamic cascading location
+    const [locationLevels, setLocationLevels] = useState<LocationLevel[]>([]);
     const [loadingCountries, setLoadingCountries] = useState(true);
-    const [loadingRegions, setLoadingRegions] = useState(false);
 
+    // Load countries on mount
     useEffect(() => {
         locationApi.countries()
-            .then((res) => setCountries(res.countries))
+            .then((res) => {
+                setLocationLevels([{
+                    label: "Country",
+                    options: res.countries,
+                    selectedId: "",
+                    loading: false,
+                }]);
+            })
             .catch(() => {})
             .finally(() => setLoadingCountries(false));
     }, []);
 
-    useEffect(() => {
-        if (!countryId) {
-            setRegions([]);
-            setRegionId("");
-            return;
+    // Handle location selection at any level
+    const handleLocationChange = useCallback((levelIndex: number, selectedId: string) => {
+        setLocationLevels((prev) => {
+            // Update the selected value and trim deeper levels
+            const updated = prev.slice(0, levelIndex + 1);
+            updated[levelIndex] = { ...updated[levelIndex], selectedId };
+            // Add a loading placeholder for the next level
+            return [...updated, { label: "", options: [], selectedId: "", loading: true }];
+        });
+
+        // Fetch children
+        locationApi.children(Number(selectedId))
+            .then((res) => {
+                setLocationLevels((prev) => {
+                    // If user changed selection while loading, ignore stale response
+                    if (prev[levelIndex]?.selectedId !== selectedId) return prev;
+
+                    if (res.children.length === 0) {
+                        // No children — current selection is atomic, remove loading placeholder
+                        return prev.slice(0, levelIndex + 1);
+                    }
+
+                    // Determine label from first child's type
+                    const childType = res.children[0]?.type || "region";
+                    const label = LEVEL_LABELS[childType] || childType.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+                    const updated = [...prev];
+                    updated[levelIndex + 1] = {
+                        label,
+                        options: res.children,
+                        selectedId: "",
+                        loading: false,
+                    };
+                    return updated;
+                });
+            })
+            .catch(() => {
+                // On error, remove the loading placeholder
+                setLocationLevels((prev) => prev.slice(0, levelIndex + 1));
+            });
+    }, []);
+
+    // Get the country ID (first level selection)
+    const countryId = locationLevels[0]?.selectedId || "";
+
+    // Get the final (atomic) geographic_unit_id
+    // It's the last level that has a selectedId AND has no children loaded after it
+    const getAtomicId = (): string => {
+        for (let i = locationLevels.length - 1; i >= 0; i--) {
+            if (locationLevels[i].selectedId) {
+                // Check there's no next level (or next level is empty/loading)
+                const nextLevel = locationLevels[i + 1];
+                if (!nextLevel || (nextLevel.options.length === 0 && !nextLevel.loading)) {
+                    return locationLevels[i].selectedId;
+                }
+            }
         }
-        setLoadingRegions(true);
-        setRegionId("");
-        locationApi.children(Number(countryId))
-            .then((res) => setRegions(res.children))
-            .catch(() => setRegions([]))
-            .finally(() => setLoadingRegions(false));
-    }, [countryId]);
+        return "";
+    };
+
+    // Check if location selection is complete (reached atomic level)
+    const isLocationComplete = (): boolean => {
+        const lastLevelWithSelection = locationLevels.findLastIndex((l) => l.selectedId !== "");
+        if (lastLevelWithSelection < 0) return false;
+        // Complete if there's no deeper level loaded after it
+        const nextLevel = locationLevels[lastLevelWithSelection + 1];
+        return !nextLevel || (nextLevel.options.length === 0 && !nextLevel.loading);
+    };
+
+    const isAnyLocationLoading = locationLevels.some((l) => l.loading);
 
     function validateStep1(): boolean {
         if (!firstName.trim() || !lastName.trim()) {
@@ -109,14 +188,25 @@ export default function RegisterPage() {
         e.preventDefault();
         setError("");
 
-        if (!dateOfBirth || !gender || !countryId || !regionId) {
-            setError("Please fill in all fields.");
+        if (!dateOfBirth || !gender) {
+            setError("Please fill in date of birth and gender.");
+            return;
+        }
+
+        if (!countryId) {
+            setError("Please select your country.");
+            return;
+        }
+
+        const atomicId = getAtomicId();
+        if (!atomicId || !isLocationComplete()) {
+            setError("Please complete your location selection down to the community level.");
             return;
         }
 
         setLoading(true);
         try {
-            await authApi.register({
+            const payload: Parameters<typeof authApi.register>[0] = {
                 first_name: firstName,
                 last_name: lastName,
                 nickname,
@@ -125,10 +215,14 @@ export default function RegisterPage() {
                 date_of_birth: dateOfBirth,
                 gender,
                 country_id: Number(countryId),
-                geographic_unit_id: Number(regionId),
+                geographic_unit_id: Number(atomicId),
                 password,
                 password_confirmation: passwordConfirmation,
-            });
+            };
+            if (nationalIdNumber.trim()) {
+                payload.national_id_number = nationalIdNumber.trim();
+            }
+            await authApi.register(payload);
             router.push(`/verify-email?email=${encodeURIComponent(email)}`);
         } catch (err) {
             setError(err instanceof Error ? err.message : "Registration failed. Please try again.");
@@ -360,6 +454,8 @@ export default function RegisterPage() {
                                         id="date_of_birth"
                                         type="date"
                                         required
+                                        max={new Date().toISOString().split("T")[0]}
+                                        min="1920-01-01"
                                         value={dateOfBirth}
                                         onChange={(e) => setDateOfBirth(e.target.value)}
                                         className={inputClass}
@@ -375,41 +471,90 @@ export default function RegisterPage() {
                                     <SelectContent>
                                         <SelectItem value="male">Male</SelectItem>
                                         <SelectItem value="female">Female</SelectItem>
+                                        <SelectItem value="other">Other</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="space-y-2">
-                                <Label htmlFor="country" className={labelClass}>Country</Label>
-                                <Select value={countryId} onValueChange={setCountryId} required disabled={loadingCountries}>
-                                    <SelectTrigger className="search-input-dark h-12 rounded-xl border-border/20 w-full">
-                                        <div className="flex items-center gap-2">
-                                            <MapPin className="h-5 w-5 text-muted-foreground shrink-0" />
-                                            <SelectValue placeholder={loadingCountries ? "Loading..." : "Select"} />
+                        {/* National ID (optional) */}
+                        <div className="space-y-2">
+                            <Label htmlFor="national_id" className={labelClass}>
+                                National ID Number <span className="text-muted-foreground/60 normal-case font-normal">(optional)</span>
+                            </Label>
+                            <div className="relative">
+                                <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                <Input
+                                    id="national_id"
+                                    type="text"
+                                    placeholder="e.g. 12345678"
+                                    maxLength={50}
+                                    value={nationalIdNumber}
+                                    onChange={(e) => setNationalIdNumber(e.target.value)}
+                                    className={inputClass}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Dynamic cascading location */}
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                                <Label className={labelClass}>Your Location</Label>
+                            </div>
+
+                            {loadingCountries ? (
+                                <div className="flex items-center gap-2 py-3 text-sm text-muted-foreground">
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Loading countries...
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {locationLevels.map((level, index) => {
+                                        if (level.loading) {
+                                            return (
+                                                <div key={`loading-${index}`} className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                    Loading...
+                                                </div>
+                                            );
+                                        }
+                                        if (level.options.length === 0) return null;
+
+                                        return (
+                                            <div key={`level-${index}`} className="space-y-1.5">
+                                                <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">
+                                                    {level.label}
+                                                </span>
+                                                <Select
+                                                    value={level.selectedId}
+                                                    onValueChange={(val) => handleLocationChange(index, val)}
+                                                    required={index === 0}
+                                                >
+                                                    <SelectTrigger className="search-input-dark h-11 rounded-xl border-border/20 w-full">
+                                                        <SelectValue placeholder={`Select ${level.label.toLowerCase()}`} />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {level.options.map((opt) => (
+                                                            <SelectItem key={opt.id} value={String(opt.id)}>
+                                                                {opt.flag ? `${opt.flag} ${opt.name}` : opt.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        );
+                                    })}
+
+                                    {/* Completion indicator */}
+                                    {isLocationComplete() && countryId && (
+                                        <div className="flex items-center gap-2 text-xs text-emerald-400">
+                                            <Check className="h-3.5 w-3.5" />
+                                            Location complete
                                         </div>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {countries.map((c) => (
-                                            <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="region" className={labelClass}>Region</Label>
-                                <Select value={regionId} onValueChange={setRegionId} required disabled={!countryId || loadingRegions}>
-                                    <SelectTrigger className="search-input-dark h-12 rounded-xl border-border/20 w-full">
-                                        <SelectValue placeholder={loadingRegions ? "Loading..." : "Select"} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {regions.map((r) => (
-                                            <SelectItem key={r.id} value={String(r.id)}>{r.name}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex gap-3 mt-2">
@@ -424,7 +569,7 @@ export default function RegisterPage() {
                             </Button>
                             <Button
                                 type="submit"
-                                disabled={loading}
+                                disabled={loading || isAnyLocationLoading || !isLocationComplete()}
                                 className="flex-1 h-12 rounded-xl bg-electric hover:bg-electric/90 text-[#030e10] font-bold text-base glow-cyan transition-all"
                             >
                                 {loading ? (

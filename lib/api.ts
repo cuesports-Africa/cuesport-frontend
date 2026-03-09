@@ -176,6 +176,7 @@ export const authApi = {
     gender: string;
     country_id: number;
     geographic_unit_id: number;
+    national_id_number?: string;
   }) => api.post<{ message: string; user: User }>("/auth/register", data),
 
   verifyEmail: (data: { email: string; code: string }) =>
