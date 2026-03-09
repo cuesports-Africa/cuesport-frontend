@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Phone, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowLeft, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Logo } from "@/components/layout/logo";
 import { authApi } from "@/lib/api";
 
@@ -65,18 +66,11 @@ export default function LoginPage() {
                 <form className="space-y-5" onSubmit={handleSubmit}>
                     <div className="space-y-2">
                         <Label htmlFor="phone_number" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Phone Number</Label>
-                        <div className="relative">
-                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                            <Input
-                                id="phone_number"
-                                type="tel"
-                                placeholder="+254712345678"
-                                required
-                                value={phoneNumber}
-                                onChange={(e) => setPhoneNumber(e.target.value)}
-                                className="search-input-dark pl-10 h-12 rounded-xl border-border/20"
-                            />
-                        </div>
+                        <PhoneInput
+                            value={phoneNumber}
+                            onChange={setPhoneNumber}
+                            required
+                        />
                     </div>
 
                     <div className="space-y-2">

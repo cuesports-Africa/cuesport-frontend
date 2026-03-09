@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-    ArrowLeft, Mail, Lock, User, ArrowRight, Phone,
+    ArrowLeft, Mail, Lock, User, ArrowRight,
     Calendar, Loader2, MapPin, AtSign, ChevronLeft, Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Logo } from "@/components/layout/logo";
 import { authApi, locationApi, type GeographicUnit } from "@/lib/api";
 
@@ -259,37 +260,29 @@ export default function RegisterPage() {
                             <p className="text-[10px] text-muted-foreground">Your display name (2-30 characters). Must be unique.</p>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="space-y-2">
-                                <Label htmlFor="email" className={labelClass}>Email</Label>
-                                <div className="relative">
-                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        placeholder="name@example.com"
-                                        required
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className={inputClass}
-                                    />
-                                </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="email" className={labelClass}>Email</Label>
+                            <div className="relative">
+                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="name@example.com"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className={inputClass}
+                                />
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="phone_number" className={labelClass}>Phone Number</Label>
-                                <div className="relative">
-                                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                    <Input
-                                        id="phone_number"
-                                        type="tel"
-                                        placeholder="+254712345678"
-                                        required
-                                        value={phoneNumber}
-                                        onChange={(e) => setPhoneNumber(e.target.value)}
-                                        className={inputClass}
-                                    />
-                                </div>
-                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="phone_number" className={labelClass}>Phone Number</Label>
+                            <PhoneInput
+                                value={phoneNumber}
+                                onChange={setPhoneNumber}
+                                required
+                            />
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
