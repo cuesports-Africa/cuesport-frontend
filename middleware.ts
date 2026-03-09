@@ -3,6 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get("host") || "";
 
+  // Redirect www → non-www (canonical domain)
+  if (hostname.startsWith("www.")) {
+    const url = request.nextUrl.clone();
+    url.host = hostname.replace(/^www\./, "");
+    return NextResponse.redirect(url, 301);
+  }
+
   // Rewrite advertise.cuesports.africa/* → /advertise/*
   if (hostname.startsWith("advertise.")) {
     const url = request.nextUrl.clone();
