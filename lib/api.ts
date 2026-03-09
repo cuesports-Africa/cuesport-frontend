@@ -1180,6 +1180,9 @@ export interface GeographicUnit {
   code?: string;
   type: "country" | "region" | "county" | "sub_county" | "ward" | "community";
   parent_id?: number;
+  phone_code?: string;
+  flag?: string;
+  location_label?: string;
 }
 
 export const locationApi = {

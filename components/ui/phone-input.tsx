@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { locationApi } from "@/lib/api";
 
 interface CountryCode {
     name: string;
@@ -11,63 +12,6 @@ interface CountryCode {
     dial: string;
     flag: string;
 }
-
-const COUNTRY_CODES: CountryCode[] = [
-    { name: "Kenya", code: "KE", dial: "+254", flag: "🇰🇪" },
-    { name: "Nigeria", code: "NG", dial: "+234", flag: "🇳🇬" },
-    { name: "South Africa", code: "ZA", dial: "+27", flag: "🇿🇦" },
-    { name: "Tanzania", code: "TZ", dial: "+255", flag: "🇹🇿" },
-    { name: "Uganda", code: "UG", dial: "+256", flag: "🇺🇬" },
-    { name: "Ghana", code: "GH", dial: "+233", flag: "🇬🇭" },
-    { name: "Ethiopia", code: "ET", dial: "+251", flag: "🇪🇹" },
-    { name: "Rwanda", code: "RW", dial: "+250", flag: "🇷🇼" },
-    { name: "Cameroon", code: "CM", dial: "+237", flag: "🇨🇲" },
-    { name: "Senegal", code: "SN", dial: "+221", flag: "🇸🇳" },
-    { name: "Côte d'Ivoire", code: "CI", dial: "+225", flag: "🇨🇮" },
-    { name: "Mozambique", code: "MZ", dial: "+258", flag: "🇲🇿" },
-    { name: "Zimbabwe", code: "ZW", dial: "+263", flag: "🇿🇼" },
-    { name: "Zambia", code: "ZM", dial: "+260", flag: "🇿🇲" },
-    { name: "Botswana", code: "BW", dial: "+267", flag: "🇧🇼" },
-    { name: "Namibia", code: "NA", dial: "+264", flag: "🇳🇦" },
-    { name: "Malawi", code: "MW", dial: "+265", flag: "🇲🇼" },
-    { name: "DR Congo", code: "CD", dial: "+243", flag: "🇨🇩" },
-    { name: "Angola", code: "AO", dial: "+244", flag: "🇦🇴" },
-    { name: "Egypt", code: "EG", dial: "+20", flag: "🇪🇬" },
-    { name: "Morocco", code: "MA", dial: "+212", flag: "🇲🇦" },
-    { name: "Tunisia", code: "TN", dial: "+216", flag: "🇹🇳" },
-    { name: "Algeria", code: "DZ", dial: "+213", flag: "🇩🇿" },
-    { name: "Sudan", code: "SD", dial: "+249", flag: "🇸🇩" },
-    { name: "Somalia", code: "SO", dial: "+252", flag: "🇸🇴" },
-    { name: "Madagascar", code: "MG", dial: "+261", flag: "🇲🇬" },
-    { name: "Mauritius", code: "MU", dial: "+230", flag: "🇲🇺" },
-    { name: "Burkina Faso", code: "BF", dial: "+226", flag: "🇧🇫" },
-    { name: "Mali", code: "ML", dial: "+223", flag: "🇲🇱" },
-    { name: "Togo", code: "TG", dial: "+228", flag: "🇹🇬" },
-    { name: "Benin", code: "BJ", dial: "+229", flag: "🇧🇯" },
-    { name: "Sierra Leone", code: "SL", dial: "+232", flag: "🇸🇱" },
-    { name: "Liberia", code: "LR", dial: "+231", flag: "🇱🇷" },
-    { name: "Gambia", code: "GM", dial: "+220", flag: "🇬🇲" },
-    { name: "Guinea", code: "GN", dial: "+224", flag: "🇬🇳" },
-    { name: "Eswatini", code: "SZ", dial: "+268", flag: "🇸🇿" },
-    { name: "Lesotho", code: "LS", dial: "+266", flag: "🇱🇸" },
-    { name: "Burundi", code: "BI", dial: "+257", flag: "🇧🇮" },
-    { name: "South Sudan", code: "SS", dial: "+211", flag: "🇸🇸" },
-    { name: "Eritrea", code: "ER", dial: "+291", flag: "🇪🇷" },
-    { name: "Djibouti", code: "DJ", dial: "+253", flag: "🇩🇯" },
-    { name: "Comoros", code: "KM", dial: "+269", flag: "🇰🇲" },
-    { name: "Cape Verde", code: "CV", dial: "+238", flag: "🇨🇻" },
-    { name: "São Tomé and Príncipe", code: "ST", dial: "+239", flag: "🇸🇹" },
-    { name: "Seychelles", code: "SC", dial: "+248", flag: "🇸🇨" },
-    { name: "Equatorial Guinea", code: "GQ", dial: "+240", flag: "🇬🇶" },
-    { name: "Gabon", code: "GA", dial: "+241", flag: "🇬🇦" },
-    { name: "Congo", code: "CG", dial: "+242", flag: "🇨🇬" },
-    { name: "Central African Republic", code: "CF", dial: "+236", flag: "🇨🇫" },
-    { name: "Chad", code: "TD", dial: "+235", flag: "🇹🇩" },
-    { name: "Niger", code: "NE", dial: "+227", flag: "🇳🇪" },
-    { name: "Mauritania", code: "MR", dial: "+222", flag: "🇲🇷" },
-    { name: "Libya", code: "LY", dial: "+218", flag: "🇱🇾" },
-    { name: "Guinea-Bissau", code: "GW", dial: "+245", flag: "🇬🇼" },
-];
 
 interface PhoneInputProps {
     value: string;
@@ -86,22 +30,57 @@ export function PhoneInput({
     className,
     defaultCountry = "KE",
 }: PhoneInputProps) {
-    const [selectedCountry, setSelectedCountry] = useState<CountryCode>(
-        () => COUNTRY_CODES.find((c) => c.code === defaultCountry) || COUNTRY_CODES[0]
-    );
-    const [localNumber, setLocalNumber] = useState(() => {
-        // Strip dial code from initial value if present
-        for (const c of COUNTRY_CODES) {
-            if (value.startsWith(c.dial)) {
-                return value.slice(c.dial.length);
-            }
-        }
-        return value.replace(/^\+\d+/, "");
-    });
+    const [countries, setCountries] = useState<CountryCode[]>([]);
+    const [loadingCountries, setLoadingCountries] = useState(true);
+    const [selectedCountry, setSelectedCountry] = useState<CountryCode | null>(null);
+    const [localNumber, setLocalNumber] = useState("");
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
     const dropdownRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLInputElement>(null);
+    const initializedRef = useRef(false);
+
+    // Fetch active countries from backend
+    useEffect(() => {
+        locationApi.countries()
+            .then((res) => {
+                const mapped: CountryCode[] = res.countries
+                    .filter((c) => c.phone_code && c.flag)
+                    .map((c) => ({
+                        name: c.name,
+                        code: c.code || "",
+                        dial: c.phone_code!,
+                        flag: c.flag!,
+                    }));
+                setCountries(mapped);
+
+                // Set default selected country
+                const defaultMatch = mapped.find((c) => c.code === defaultCountry) || mapped[0];
+                if (defaultMatch && !initializedRef.current) {
+                    initializedRef.current = true;
+                    setSelectedCountry(defaultMatch);
+
+                    // Parse initial value
+                    if (value) {
+                        let stripped = value;
+                        for (const c of mapped) {
+                            if (value.startsWith(c.dial)) {
+                                stripped = value.slice(c.dial.length);
+                                break;
+                            }
+                        }
+                        setLocalNumber(stripped.replace(/^\+\d+/, ""));
+                    }
+
+                    // Emit initial full number if no value yet
+                    if (!value) {
+                        onChange(defaultMatch.dial);
+                    }
+                }
+            })
+            .catch(() => {})
+            .finally(() => setLoadingCountries(false));
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -113,17 +92,17 @@ export function PhoneInput({
         }
         if (open) {
             document.addEventListener("mousedown", handleClick);
-            // Focus search when opening
             setTimeout(() => searchRef.current?.focus(), 50);
         }
         return () => document.removeEventListener("mousedown", handleClick);
     }, [open]);
 
     function handleLocalChange(val: string) {
-        // Allow only digits
         const digits = val.replace(/\D/g, "");
         setLocalNumber(digits);
-        onChange(selectedCountry.dial + digits);
+        if (selectedCountry) {
+            onChange(selectedCountry.dial + digits);
+        }
     }
 
     function handleSelectCountry(country: CountryCode) {
@@ -134,13 +113,13 @@ export function PhoneInput({
     }
 
     const filtered = search.trim()
-        ? COUNTRY_CODES.filter(
+        ? countries.filter(
               (c) =>
                   c.name.toLowerCase().includes(search.toLowerCase()) ||
                   c.dial.includes(search) ||
                   c.code.toLowerCase().includes(search.toLowerCase())
           )
-        : COUNTRY_CODES;
+        : countries;
 
     return (
         <div className={cn("relative", className)}>
@@ -149,11 +128,18 @@ export function PhoneInput({
                 <div className="relative" ref={dropdownRef}>
                     <button
                         type="button"
-                        onClick={() => setOpen(!open)}
+                        onClick={() => !loadingCountries && setOpen(!open)}
+                        disabled={loadingCountries}
                         className="search-input-dark h-12 rounded-l-xl rounded-r-none border-border/20 border-r-0 px-3 flex items-center gap-1.5 hover:bg-muted/30 transition-colors shrink-0"
                     >
-                        <span className="text-base leading-none">{selectedCountry.flag}</span>
-                        <span className="text-sm font-medium text-muted-foreground">{selectedCountry.dial}</span>
+                        {loadingCountries ? (
+                            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                        ) : (
+                            <>
+                                <span className="text-base leading-none">{selectedCountry?.flag}</span>
+                                <span className="text-sm font-medium text-muted-foreground">{selectedCountry?.dial}</span>
+                            </>
+                        )}
                         <ChevronDown className={cn(
                             "h-3.5 w-3.5 text-muted-foreground transition-transform",
                             open && "rotate-180"
@@ -191,7 +177,7 @@ export function PhoneInput({
                                             onClick={() => handleSelectCountry(country)}
                                             className={cn(
                                                 "w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-muted/40 transition-colors",
-                                                selectedCountry.code === country.code && "bg-electric/5"
+                                                selectedCountry?.code === country.code && "bg-electric/5"
                                             )}
                                         >
                                             <span className="text-base leading-none">{country.flag}</span>
@@ -221,4 +207,4 @@ export function PhoneInput({
     );
 }
 
-export { COUNTRY_CODES, type CountryCode };
+export { type CountryCode };
