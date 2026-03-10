@@ -25,7 +25,7 @@ const navItems = [
 export function OrganizerSidebar() {
     const pathname = usePathname();
     const router = useRouter();
-    const user = useOrganizerUser();
+    const { user } = useOrganizerUser();
     const [mobileOpen, setMobileOpen] = useState(false);
 
     function isActive(href: string, exact: boolean) {

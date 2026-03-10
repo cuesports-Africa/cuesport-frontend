@@ -52,7 +52,7 @@ function formatCurrency(amount: number): string {
 }
 
 export default function OrganizerDashboard() {
-  const user = useOrganizerUser();
+  const { user } = useOrganizerUser();
   const [stats, setStats] = useState<OrganizerStats | null>(null);
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
