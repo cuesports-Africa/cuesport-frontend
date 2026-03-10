@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
     ArrowLeft, Mail, Lock, User, ArrowRight,
-    Calendar, Loader2, MapPin, AtSign, ChevronLeft, Check, CreditCard,
+    Calendar, Loader2, MapPin, AtSign, ChevronLeft, Check, CreditCard, Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,21 +15,12 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { Logo } from "@/components/layout/logo";
 import { authApi, locationApi, type GeographicUnit } from "@/lib/api";
 
-// Level labels for each depth in the hierarchy
-const LEVEL_LABELS: Record<string, string> = {
-    country: "Country",
-    region: "Region",
-    county: "County",
-    sub_county: "Constituency",
-    ward: "Ward",
-    community: "Community",
-};
-
-interface LocationLevel {
-    label: string;
-    options: GeographicUnit[];
-    selectedId: string;
-    loading: boolean;
+interface WardResult {
+    id: number;
+    name: string;
+    full_path: string;
+    level: number;
+    local_term: string;
 }
 
 export default function RegisterPage() {
@@ -53,95 +44,108 @@ export default function RegisterPage() {
     const [gender, setGender] = useState("");
     const [nationalIdNumber, setNationalIdNumber] = useState("");
 
-    // Dynamic cascading location
-    const [locationLevels, setLocationLevels] = useState<LocationLevel[]>([]);
+    // Location: Country → Ward search → Community
+    const [countries, setCountries] = useState<GeographicUnit[]>([]);
+    const [countryId, setCountryId] = useState("");
     const [loadingCountries, setLoadingCountries] = useState(true);
+
+    // Ward search
+    const [wardQuery, setWardQuery] = useState("");
+    const [wardResults, setWardResults] = useState<WardResult[]>([]);
+    const [wardSearching, setWardSearching] = useState(false);
+    const [selectedWard, setSelectedWard] = useState<WardResult | null>(null);
+    const [showWardDropdown, setShowWardDropdown] = useState(false);
+    const wardDropdownRef = useRef<HTMLDivElement>(null);
+    const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Community (children of ward)
+    const [communities, setCommunities] = useState<GeographicUnit[]>([]);
+    const [communityId, setCommunityId] = useState("");
+    const [loadingCommunities, setLoadingCommunities] = useState(false);
 
     // Load countries on mount
     useEffect(() => {
         locationApi.countries()
-            .then((res) => {
-                setLocationLevels([{
-                    label: "Country",
-                    options: res.countries,
-                    selectedId: "",
-                    loading: false,
-                }]);
-            })
+            .then((res) => setCountries(res.countries))
             .catch(() => {})
             .finally(() => setLoadingCountries(false));
     }, []);
 
-    // Handle location selection at any level
-    const handleLocationChange = useCallback((levelIndex: number, selectedId: string) => {
-        setLocationLevels((prev) => {
-            // Update the selected value and trim deeper levels
-            const updated = prev.slice(0, levelIndex + 1);
-            updated[levelIndex] = { ...updated[levelIndex], selectedId };
-            // Add a loading placeholder for the next level
-            return [...updated, { label: "", options: [], selectedId: "", loading: true }];
-        });
+    // Debounced ward search
+    useEffect(() => {
+        if (!countryId || wardQuery.trim().length < 2) {
+            setWardResults([]);
+            setShowWardDropdown(false);
+            return;
+        }
 
-        // Fetch children
-        locationApi.children(Number(selectedId))
-            .then((res) => {
-                setLocationLevels((prev) => {
-                    // If user changed selection while loading, ignore stale response
-                    if (prev[levelIndex]?.selectedId !== selectedId) return prev;
+        if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+        searchTimerRef.current = setTimeout(() => {
+            setWardSearching(true);
+            locationApi.search(wardQuery.trim(), { country_id: Number(countryId) })
+                .then((res) => {
+                    setWardResults(res.results);
+                    setShowWardDropdown(true);
+                })
+                .catch(() => setWardResults([]))
+                .finally(() => setWardSearching(false));
+        }, 350);
 
-                    if (res.children.length === 0) {
-                        // No children — current selection is atomic, remove loading placeholder
-                        return prev.slice(0, levelIndex + 1);
-                    }
+        return () => {
+            if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+        };
+    }, [wardQuery, countryId]);
 
-                    // Determine label from first child's type
-                    const childType = res.children[0]?.type || "region";
-                    const label = LEVEL_LABELS[childType] || childType.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    // Load communities when ward is selected
+    useEffect(() => {
+        if (!selectedWard) {
+            setCommunities([]);
+            setCommunityId("");
+            return;
+        }
+        setLoadingCommunities(true);
+        setCommunityId("");
+        locationApi.children(selectedWard.id)
+            .then((res) => setCommunities(res.children))
+            .catch(() => setCommunities([]))
+            .finally(() => setLoadingCommunities(false));
+    }, [selectedWard]);
 
-                    const updated = [...prev];
-                    updated[levelIndex + 1] = {
-                        label,
-                        options: res.children,
-                        selectedId: "",
-                        loading: false,
-                    };
-                    return updated;
-                });
-            })
-            .catch(() => {
-                // On error, remove the loading placeholder
-                setLocationLevels((prev) => prev.slice(0, levelIndex + 1));
-            });
-    }, []);
-
-    // Get the country ID (first level selection)
-    const countryId = locationLevels[0]?.selectedId || "";
-
-    // Get the final (atomic) geographic_unit_id
-    // It's the last level that has a selectedId AND has no children loaded after it
-    const getAtomicId = (): string => {
-        for (let i = locationLevels.length - 1; i >= 0; i--) {
-            if (locationLevels[i].selectedId) {
-                // Check there's no next level (or next level is empty/loading)
-                const nextLevel = locationLevels[i + 1];
-                if (!nextLevel || (nextLevel.options.length === 0 && !nextLevel.loading)) {
-                    return locationLevels[i].selectedId;
-                }
+    // Close ward dropdown on outside click
+    useEffect(() => {
+        function handleClick(e: MouseEvent) {
+            if (wardDropdownRef.current && !wardDropdownRef.current.contains(e.target as Node)) {
+                setShowWardDropdown(false);
             }
         }
-        return "";
-    };
+        document.addEventListener("mousedown", handleClick);
+        return () => document.removeEventListener("mousedown", handleClick);
+    }, []);
 
-    // Check if location selection is complete (reached atomic level)
-    const isLocationComplete = (): boolean => {
-        const lastLevelWithSelection = locationLevels.findLastIndex((l) => l.selectedId !== "");
-        if (lastLevelWithSelection < 0) return false;
-        // Complete if there's no deeper level loaded after it
-        const nextLevel = locationLevels[lastLevelWithSelection + 1];
-        return !nextLevel || (nextLevel.options.length === 0 && !nextLevel.loading);
-    };
+    // Reset ward/community when country changes
+    function handleCountryChange(val: string) {
+        setCountryId(val);
+        setWardQuery("");
+        setSelectedWard(null);
+        setWardResults([]);
+        setCommunities([]);
+        setCommunityId("");
+    }
 
-    const isAnyLocationLoading = locationLevels.some((l) => l.loading);
+    function handleWardSelect(ward: WardResult) {
+        setSelectedWard(ward);
+        setWardQuery(ward.name);
+        setShowWardDropdown(false);
+    }
+
+    function clearWard() {
+        setSelectedWard(null);
+        setWardQuery("");
+        setCommunities([]);
+        setCommunityId("");
+    }
+
+    const isLocationComplete = !!communityId;
 
     function validateStep1(): boolean {
         if (!firstName.trim() || !lastName.trim()) {
@@ -193,14 +197,8 @@ export default function RegisterPage() {
             return;
         }
 
-        if (!countryId) {
-            setError("Please select your country.");
-            return;
-        }
-
-        const atomicId = getAtomicId();
-        if (!atomicId || !isLocationComplete()) {
-            setError("Please complete your location selection down to the community level.");
+        if (!countryId || !communityId) {
+            setError("Please complete your location (country, ward, and community).");
             return;
         }
 
@@ -215,7 +213,7 @@ export default function RegisterPage() {
                 date_of_birth: dateOfBirth,
                 gender,
                 country_id: Number(countryId),
-                geographic_unit_id: Number(atomicId),
+                geographic_unit_id: Number(communityId),
                 password,
                 password_confirmation: passwordConfirmation,
             };
@@ -496,63 +494,138 @@ export default function RegisterPage() {
                             </div>
                         </div>
 
-                        {/* Dynamic cascading location */}
+                        {/* Location: Country → Ward search → Community */}
                         <div className="space-y-3">
                             <div className="flex items-center gap-2">
                                 <MapPin className="h-4 w-4 text-muted-foreground" />
                                 <Label className={labelClass}>Your Location</Label>
                             </div>
 
-                            {loadingCountries ? (
-                                <div className="flex items-center gap-2 py-3 text-sm text-muted-foreground">
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                    Loading countries...
-                                </div>
-                            ) : (
-                                <div className="space-y-3">
-                                    {locationLevels.map((level, index) => {
-                                        if (level.loading) {
-                                            return (
-                                                <div key={`loading-${index}`} className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
-                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                    Loading...
+                            {/* Country */}
+                            <div className="space-y-1.5">
+                                <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">Country</span>
+                                <Select value={countryId} onValueChange={handleCountryChange} required disabled={loadingCountries}>
+                                    <SelectTrigger className="search-input-dark h-11 rounded-xl border-border/20 w-full">
+                                        <SelectValue placeholder={loadingCountries ? "Loading..." : "Select country"} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {countries.map((c) => (
+                                            <SelectItem key={c.id} value={String(c.id)}>
+                                                {c.flag ? `${c.flag} ${c.name}` : c.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Ward search */}
+                            {countryId && (
+                                <div className="space-y-1.5">
+                                    <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">
+                                        Ward
+                                    </span>
+                                    <div className="relative" ref={wardDropdownRef}>
+                                        {selectedWard ? (
+                                            <div className="search-input-dark h-11 rounded-xl border-border/20 px-3 flex items-center justify-between">
+                                                <div className="min-w-0">
+                                                    <span className="text-sm text-foreground">{selectedWard.name}</span>
+                                                    <span className="text-xs text-muted-foreground ml-2 hidden sm:inline">
+                                                        {selectedWard.full_path}
+                                                    </span>
                                                 </div>
-                                            );
-                                        }
-                                        if (level.options.length === 0) return null;
-
-                                        return (
-                                            <div key={`level-${index}`} className="space-y-1.5">
-                                                <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">
-                                                    {level.label}
-                                                </span>
-                                                <Select
-                                                    value={level.selectedId}
-                                                    onValueChange={(val) => handleLocationChange(index, val)}
-                                                    required={index === 0}
+                                                <button
+                                                    type="button"
+                                                    onClick={clearWard}
+                                                    className="text-xs font-medium text-electric hover:underline shrink-0 ml-2"
                                                 >
-                                                    <SelectTrigger className="search-input-dark h-11 rounded-xl border-border/20 w-full">
-                                                        <SelectValue placeholder={`Select ${level.label.toLowerCase()}`} />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {level.options.map((opt) => (
-                                                            <SelectItem key={opt.id} value={String(opt.id)}>
-                                                                {opt.flag ? `${opt.flag} ${opt.name}` : opt.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                    Change
+                                                </button>
                                             </div>
-                                        );
-                                    })}
+                                        ) : (
+                                            <>
+                                                <div className="relative">
+                                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                                    <Input
+                                                        type="text"
+                                                        placeholder="Type to search your ward..."
+                                                        value={wardQuery}
+                                                        onChange={(e) => {
+                                                            setWardQuery(e.target.value);
+                                                            setSelectedWard(null);
+                                                        }}
+                                                        className="search-input-dark pl-9 h-11 rounded-xl border-border/20"
+                                                    />
+                                                    {wardSearching && (
+                                                        <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+                                                    )}
+                                                </div>
 
-                                    {/* Completion indicator */}
-                                    {isLocationComplete() && countryId && (
-                                        <div className="flex items-center gap-2 text-xs text-emerald-400">
-                                            <Check className="h-3.5 w-3.5" />
-                                            Location complete
+                                                {/* Search results dropdown */}
+                                                {showWardDropdown && wardResults.length > 0 && (
+                                                    <div className="absolute top-full left-0 right-0 mt-1 max-h-48 bg-background border border-border/30 rounded-xl shadow-2xl z-50 overflow-y-auto animate-in fade-in-0 zoom-in-95 duration-150">
+                                                        {wardResults.map((ward) => (
+                                                            <button
+                                                                key={ward.id}
+                                                                type="button"
+                                                                onClick={() => handleWardSelect(ward)}
+                                                                className="w-full text-left px-3 py-2.5 hover:bg-muted/40 transition-colors"
+                                                            >
+                                                                <span className="text-sm text-foreground block">{ward.name}</span>
+                                                                <span className="text-[10px] text-muted-foreground block truncate">
+                                                                    {ward.full_path}
+                                                                </span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                                {showWardDropdown && wardResults.length === 0 && !wardSearching && wardQuery.trim().length >= 2 && (
+                                                    <div className="absolute top-full left-0 right-0 mt-1 px-3 py-3 bg-background border border-border/30 rounded-xl shadow-2xl z-50 text-sm text-muted-foreground text-center">
+                                                        No wards found
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground">Search by ward name (e.g. &quot;Magumu&quot;)</p>
+                                </div>
+                            )}
+
+                            {/* Community (children of selected ward) */}
+                            {selectedWard && (
+                                <div className="space-y-1.5">
+                                    <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">
+                                        Community
+                                    </span>
+                                    {loadingCommunities ? (
+                                        <div className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            Loading communities...
                                         </div>
+                                    ) : communities.length > 0 ? (
+                                        <Select value={communityId} onValueChange={setCommunityId} required>
+                                            <SelectTrigger className="search-input-dark h-11 rounded-xl border-border/20 w-full">
+                                                <SelectValue placeholder="Select community" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {communities.map((c) => (
+                                                    <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <p className="text-xs text-muted-foreground py-2">
+                                            No communities found for this ward.
+                                        </p>
                                     )}
+                                </div>
+                            )}
+
+                            {/* Completion indicator */}
+                            {isLocationComplete && (
+                                <div className="flex items-center gap-2 text-xs text-emerald-400">
+                                    <Check className="h-3.5 w-3.5" />
+                                    Location complete
                                 </div>
                             )}
                         </div>
@@ -569,7 +642,7 @@ export default function RegisterPage() {
                             </Button>
                             <Button
                                 type="submit"
-                                disabled={loading || isAnyLocationLoading || !isLocationComplete()}
+                                disabled={loading || !isLocationComplete}
                                 className="flex-1 h-12 rounded-xl bg-electric hover:bg-electric/90 text-[#030e10] font-bold text-base glow-cyan transition-all"
                             >
                                 {loading ? (
