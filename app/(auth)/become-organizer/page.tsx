@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Building2, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ import { Logo } from "@/components/layout/logo";
 import { organizerApi } from "@/lib/api";
 
 export default function BecomeOrganizerPage() {
-    const router = useRouter();
     const [organizationName, setOrganizationName] = useState("");
     const [description, setDescription] = useState("");
     const [loading, setLoading] = useState(false);
@@ -27,10 +25,16 @@ export default function BecomeOrganizerPage() {
                 organization_name: organizationName,
                 description: description || undefined,
             });
-            router.push("/organizer");
+            // Hard redirect to force fresh auth guard check
+            window.location.href = "/organizer";
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to register as organizer. Please try again.");
-        } finally {
+            const message = err instanceof Error ? err.message : "Failed to register as organizer. Please try again.";
+            // If already registered, just redirect to dashboard
+            if (message.toLowerCase().includes("already registered")) {
+                window.location.href = "/organizer";
+                return;
+            }
+            setError(message);
             setLoading(false);
         }
     }
