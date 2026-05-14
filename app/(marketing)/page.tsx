@@ -1,6 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
+import heroImage from "@/public/hero.jpg";
+import heroMobileImage from "@/public/hero-mobile.jpg";
 import { Button } from "@/components/ui/button";
+import { HomeRankings } from "@/components/home-rankings";
+import { getHomeData } from "@/lib/home-data";
 import { PricingCards } from "@/components/pricing-cards";
 import { JsonLd } from "@/components/seo/json-ld";
 import { AppDownloadButton } from "@/components/app-download-button";
@@ -28,13 +32,6 @@ import {
   Target,
   ChevronRight,
 } from "lucide-react";
-
-const stats = [
-  { value: "1M+", label: "Active Players" },
-  { value: "2K+", label: "Organisers" },
-  { value: "47", label: "Counties" },
-  { value: "8", label: "Countries" },
-];
 
 const mainFeatures = [
   {
@@ -177,7 +174,10 @@ const howItWorks = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const { pulse, rankingsMen, rankingsWomen, rankingsUpdatedAt } =
+    await getHomeData();
+
   return (
     <div className="min-h-screen">
       <JsonLd
@@ -205,13 +205,27 @@ export default function Home() {
 
       {/* ─── Hero — atmospheric photo background, extends behind header ─── */}
       <section className="relative isolate overflow-hidden bg-ink text-white min-h-[88vh] flex flex-col -mt-[60px] sm:-mt-[68px] pt-[60px] sm:pt-[68px]">
+        {/* Desktop & tablet — landscape composition */}
         <Image
-          src="https://images.unsplash.com/photo-1714564209284-1ba07d735e76?w=2400&auto=format&fit=crop&q=80"
+          src={heroImage}
           alt=""
           fill
           priority
-          sizes="100vw"
-          className="object-cover object-center -z-20"
+          placeholder="blur"
+          quality={75}
+          sizes="(min-width: 768px) 100vw, 1px"
+          className="hidden md:block object-cover object-center -z-20"
+        />
+        {/* Mobile — portrait composition, same brand mood */}
+        <Image
+          src={heroMobileImage}
+          alt=""
+          fill
+          priority
+          placeholder="blur"
+          quality={75}
+          sizes="(max-width: 767px) 100vw, 1px"
+          className="block md:hidden object-cover object-center -z-20"
         />
         <div
           aria-hidden
@@ -279,21 +293,60 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── Stats Bar ─── */}
-      <section className="py-12 border-y border-border/50" style={{ background: "rgba(0,40,50,0.4)" }}>
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-electric mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
-              </div>
-            ))}
+      {/* ─── Pulse — the heartbeat of African pool, restrained editorial band ─── */}
+      <section
+        className="border-y border-white/[0.06] py-16 lg:py-20"
+        style={{ background: "rgb(7, 16, 30)" }}
+      >
+        <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-12">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="mb-5 font-mono text-[11px] uppercase tracking-[0.2em] text-white/55">
+                Right now · Across the continent
+              </p>
+              {pulse.matchesLive > 0 ? (
+                <p className="text-[clamp(1.75rem,3.6vw,2.75rem)] font-light leading-[1.15] tracking-[-0.02em] text-white">
+                  <span className="font-bold tabular-nums text-gold">{pulse.matchesLive}</span>
+                  <span className="font-light"> matches live</span>
+                  {pulse.venues > 0 && (
+                    <>
+                      <span className="mx-3 text-white/25">·</span>
+                      <span className="font-bold tabular-nums text-gold">{pulse.venues}</span>
+                      <span className="font-light"> venues</span>
+                    </>
+                  )}
+                  {pulse.countries > 0 && (
+                    <>
+                      <span className="mx-3 text-white/25">·</span>
+                      <span className="font-bold tabular-nums text-gold">{pulse.countries}</span>
+                      <span className="font-light"> countries</span>
+                    </>
+                  )}
+                </p>
+              ) : (
+                <p className="text-[clamp(1.75rem,3.6vw,2.75rem)] font-light leading-[1.15] tracking-[-0.02em] text-white">
+                  Pool. Snooker. Billiards. Carrom.{" "}
+                  <span className="text-white/60">One game.</span>
+                </p>
+              )}
+            </div>
+            <Link
+              href="/tournaments"
+              className="group inline-flex items-center gap-2 text-[14px] font-medium text-gold transition-opacity hover:opacity-80"
+            >
+              Find tournaments near you
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </Link>
           </div>
         </div>
       </section>
+
+      {/* ─── Top of the Table — interactive Men/Women tabs, live data ─── */}
+      <HomeRankings
+        men={rankingsMen}
+        women={rankingsWomen}
+        updatedAt={rankingsUpdatedAt}
+      />
 
       {/* ─── Browse by Category + Featured Tournaments ─── */}
       <section className="py-20 lg:py-24">
