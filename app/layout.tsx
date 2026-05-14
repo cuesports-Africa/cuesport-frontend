@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Sora } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { JsonLd } from "@/components/seo/json-ld";
 import { RegisterSW } from "@/components/pwa/register-sw";
@@ -7,12 +7,17 @@ import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { Providers } from "@/components/providers";
 import { WebVitals } from "@/components/analytics/web-vitals";
 
-const sora = Sora({
-  variable: "--font-sora",
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
   preload: true,
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 const siteConfig = {
@@ -182,8 +187,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#05161a" },
-    { media: "(prefers-color-scheme: dark)", color: "#05161a" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#001f3f" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -198,7 +203,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <head>
         {/* PWA Configuration */}
         <link rel="manifest" href="/manifest.json" />
@@ -261,7 +266,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${sora.variable} font-sans antialiased min-h-screen flex flex-col`}
+        className="font-sans antialiased min-h-screen flex flex-col"
         suppressHydrationWarning
       >
         <Providers>

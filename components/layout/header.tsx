@@ -3,151 +3,207 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
-import { Button } from "@/components/ui/button";
+import { Menu, X, ArrowUpRight } from "lucide-react";
 import { Logo } from "./logo";
-import { MobileNav } from "./mobile-nav";
 import { mainNavItems } from "@/config/navigation";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { cn } from "@/lib/utils";
-import { ArrowRight } from "lucide-react";
 
 export function Header() {
   const pathname = usePathname();
-  const [isScrolled, setIsScrolled] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
 
   React.useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+    setMobileOpen(false);
+  }, [pathname]);
+
+  React.useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+  }, [mobileOpen]);
+
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // On the homepage, the header floats over the dark hero photograph.
+  // At the top: transparent background, white text. On scroll: solid white.
+  const isHomepage = pathname === "/";
+  const transparent = isHomepage && !scrolled && !mobileOpen;
 
   return (
     <header
-      className="sticky top-0 z-50 w-full py-3"
+      className={cn(
+        "sticky top-0 z-50 transition-all duration-300",
+        transparent
+          ? "bg-transparent"
+          : scrolled
+            ? "bg-canvas/95 backdrop-blur-md shadow-[0_1px_0_0_var(--rule),0_8px_24px_-16px_rgba(15,23,42,0.12)]"
+            : "bg-canvas",
+      )}
     >
-      <div className="container mx-auto px-4">
-        <div className={cn(
-          "flex items-center justify-between rounded-full backdrop-blur-md border px-6 py-3 transition-all duration-300",
-          isScrolled
-            ? "bg-background/80 border-white/10 shadow-lg shadow-black/20"
-            : "bg-background/40 border-white/10 shadow-sm"
-        )}>
-          {/* Logo */}
-          <div className="flex items-center">
-            <Logo variant="white" showTagline={false} />
+      <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-12">
+        <div className="relative flex items-center justify-between h-[60px] sm:h-[68px]">
+          {/* Left — logo (Logo component carries its own Link to "/") */}
+          <div className="flex items-center shrink-0">
+            <Logo size="sm" variant={transparent ? "white" : "default"} />
           </div>
 
-          {/* Desktop Navigation */}
-          <NavigationMenu className="hidden lg:flex">
-            <NavigationMenuList className="gap-1">
-              {mainNavItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <NavigationMenuItem key={item.title}>
-                    {item.children ? (
-                      <>
-                        <NavigationMenuTrigger
-                          className={cn(
-                            "bg-transparent hover:bg-white/5 text-foreground/75 hover:text-electric transition-colors text-sm font-medium rounded-full px-4 h-10 data-[state=open]:bg-white/5 data-[state=open]:text-electric",
-                            pathname.startsWith(item.href) &&
-                            "text-electric font-semibold bg-white/5"
-                          )}
-                        >
-                          <div className="flex items-center gap-2">
-                            {Icon && <Icon className="h-4 w-4" />}
-                            {item.title}
-                          </div>
-                        </NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                          <ul className="glass-dark grid w-[400px] gap-2 p-3 md:w-[500px] md:grid-cols-2 lg:w-[600px] rounded-2xl border border-white/10 shadow-xl">
-                            {item.children.map((child) => (
-                              <li key={child.href}>
-                                <NavigationMenuLink asChild>
-                                  <Link
-                                    href={child.href}
-                                    className={cn(
-                                      "block select-none rounded-xl p-3 leading-none no-underline outline-none transition-all",
-                                      "hover:bg-white/5 hover:text-electric focus:bg-white/5 border border-transparent hover:border-white/5",
-                                      pathname === child.href &&
-                                      "bg-white/5 text-electric border-white/5"
-                                    )}
-                                  >
-                                    <div className="text-sm font-medium leading-none mb-1.5 flex items-center gap-2">
-                                      {child.title}
-                                    </div>
-                                    {child.description && (
-                                      <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
-                                        {child.description}
-                                      </p>
-                                    )}
-                                  </Link>
-                                </NavigationMenuLink>
-                              </li>
-                            ))}
-                          </ul>
-                        </NavigationMenuContent>
-                      </>
-                    ) : (
-                      <NavigationMenuLink asChild>
-                        <Link
-                          href={item.href}
-                          className={cn(
-                            navigationMenuTriggerStyle(),
-                            "bg-transparent hover:bg-white/5 text-foreground/80 hover:text-electric transition-colors text-sm font-medium rounded-full px-4 h-10",
-                            pathname === item.href && "text-electric font-semibold bg-white/5 border border-white/5"
-                          )}
-                        >
-                          <div className="flex items-center gap-2">
-                            {Icon && <Icon className="h-4 w-4" />}
-                            {item.title}
-                          </div>
-                        </Link>
-                      </NavigationMenuLink>
-                    )}
-                  </NavigationMenuItem>
-                );
-              })}
-            </NavigationMenuList>
-          </NavigationMenu>
-
-          {/* Right Side — CTA */}
-          <div className="flex items-center gap-3">
-            <div className="hidden lg:flex items-center gap-2">
-              <ThemeSwitcher />
-              <Link
-                href="/login"
-                className="px-5 py-2.5 text-sm font-medium text-foreground/80 hover:text-electric transition-colors rounded-full hover:bg-white/5"
-              >
-                Login
-              </Link>
-              <Link href="/register">
-                <Button
-                  className="bg-electric text-[#030e10] font-semibold hover:bg-electric/90 glow-cyan px-6 h-10 rounded-full text-sm transition-all duration-300 transform hover:scale-105"
+          {/* Center nav — absolutely positioned for true horizontal centering */}
+          <nav
+            className="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-1"
+            aria-label="Primary"
+          >
+            {mainNavItems.map((item) => {
+              const active =
+                pathname === item.href ||
+                (item.href !== "/" && pathname.startsWith(item.href));
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "relative inline-flex items-center px-4 h-9 text-[14px] tracking-tight transition-colors",
+                    transparent
+                      ? active
+                        ? "text-white font-semibold"
+                        : "text-white/85 font-medium hover:text-white"
+                      : active
+                        ? "text-ink font-semibold"
+                        : "text-mute font-medium hover:text-ink",
+                  )}
                 >
-                  Sign Up
-                  <ArrowRight className="ml-1.5 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
+                  {item.title}
+                  {active && (
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "absolute left-4 right-4 -bottom-[18px] h-[2px] rounded-full transition-colors",
+                        transparent ? "bg-gold" : "bg-navy",
+                      )}
+                    />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
 
-            {/* Mobile Menu */}
-            <div className="lg:hidden flex items-center">
-              <MobileNav />
-            </div>
+          {/* Right — actions */}
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              href="/login"
+              className={cn(
+                "hidden md:inline-flex items-center h-9 px-3 text-[14px] font-medium transition-colors",
+                transparent
+                  ? "text-white/85 hover:text-white"
+                  : "text-mute hover:text-ink",
+              )}
+            >
+              Sign in
+            </Link>
+
+            <Link
+              href="/register"
+              className={cn(
+                "group hidden md:inline-flex items-center gap-2 h-10 pl-5 pr-1.5 rounded-pill text-[14px] font-bold transition-all",
+                transparent
+                  ? "bg-gold text-ink hover:brightness-95"
+                  : "bg-navy text-white hover:bg-[#003a66]",
+              )}
+            >
+              Get started
+              <span
+                className={cn(
+                  "inline-flex items-center justify-center h-7 w-7 rounded-full transition-colors",
+                  transparent
+                    ? "bg-ink/15 group-hover:bg-ink/25"
+                    : "bg-white/15 group-hover:bg-white/25",
+                )}
+              >
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </span>
+            </Link>
+
+            <button
+              type="button"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+              onClick={() => setMobileOpen((v) => !v)}
+              className={cn(
+                "md:hidden inline-flex items-center justify-center h-10 w-10 -mr-2 rounded-lg transition-colors",
+                transparent
+                  ? "text-white hover:bg-white/10"
+                  : "text-ink hover:bg-bone",
+              )}
+            >
+              {mobileOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Mobile menu — always uses solid bg for readability */}
+      {mobileOpen && (
+        <div className="lg:hidden border-t border-rule bg-canvas">
+          <div className="mx-auto max-w-6xl px-6 sm:px-10 py-3">
+            <ul>
+              {mainNavItems.map((item) => {
+                const active =
+                  pathname === item.href ||
+                  (item.href !== "/" && pathname.startsWith(item.href));
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "flex items-center justify-between py-4 border-b border-rule last:border-b-0 text-[15px]",
+                        active
+                          ? "text-ink font-semibold"
+                          : "text-ink/80 font-medium",
+                      )}
+                    >
+                      <span>{item.title}</span>
+                      {active && (
+                        <span
+                          aria-hidden
+                          className="h-1.5 w-1.5 rounded-full bg-navy"
+                        />
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <div className="mt-5 pt-4 border-t border-rule flex flex-col gap-2">
+              <Link
+                href="/register"
+                className="group inline-flex items-center justify-center gap-2 h-12 pl-6 pr-2 rounded-pill bg-navy text-white text-[14px] font-bold"
+              >
+                Get started
+                <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-white/15 group-hover:bg-white/25 transition-colors">
+                  <ArrowUpRight className="h-4 w-4" />
+                </span>
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex items-center justify-center h-12 px-6 rounded-pill border border-rule text-ink text-[14px] font-medium"
+              >
+                Sign in
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

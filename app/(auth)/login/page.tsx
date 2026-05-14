@@ -3,129 +3,143 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowUpRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { Logo } from "@/components/layout/logo";
+import { AuthShell } from "@/components/auth/auth-shell";
 import { authApi } from "@/lib/api";
 
 export default function LoginPage() {
-    const router = useRouter();
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+  const router = useRouter();
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        setError("");
-        setLoading(true);
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-        try {
-            const res = await authApi.login({ phone_number: phoneNumber, password });
-            localStorage.setItem("auth_token", res.token.access_token);
+    try {
+      const res = await authApi.login({
+        phone_number: phoneNumber,
+        password,
+      });
+      localStorage.setItem("auth_token", res.token.access_token);
 
-            if (res.user.roles.is_organizer && res.user.organizer_profile) {
-                router.push("/organizer");
-            } else {
-                router.push("/become-organizer");
-            }
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Login failed. Please try again.");
-        } finally {
-            setLoading(false);
-        }
+      if (res.user.roles.is_organizer && res.user.organizer_profile) {
+        router.push("/organizer");
+      } else {
+        router.push("/become-organizer");
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Login failed. Please try again.",
+      );
+    } finally {
+      setLoading(false);
     }
+  }
 
-    return (
-        <>
-            <div className="flex justify-center mb-8">
-                <div className="inline-block transition-transform hover:scale-105">
-                    <Logo variant="white" showTagline={false} size="lg" />
-                </div>
-            </div>
+  return (
+    <AuthShell
+      imageSrc="https://images.unsplash.com/photo-1575553939928-d03b21323afe?w=1600&auto=format&fit=crop&q=80"
+      imageAlt=""
+      kicker="Welcome back"
+      tagline="Where every match keeps the record."
+    >
+      <div className="mb-9">
+        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-mute-2">
+          Sign in
+        </p>
+        <h1 className="mt-3 text-[clamp(1.875rem,3vw,2.5rem)] font-extrabold leading-[1.05] tracking-[-0.025em] text-ink">
+          Welcome back.
+        </h1>
+        <p className="mt-3 text-[15px] leading-[1.55] text-mute">
+          Sign in to manage your tournaments and track your stats.
+        </p>
+      </div>
 
-            <div className="card-dark rounded-3xl p-8 shadow-2xl border border-border/20 backdrop-blur-xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-electric to-transparent opacity-50" />
+      {error && (
+        <div
+          role="alert"
+          className="mb-5 px-4 py-3 rounded-md border border-destructive/30 bg-destructive/[0.04] text-destructive text-[13px]"
+        >
+          {error}
+        </div>
+      )}
 
-                <div className="mb-8 text-center">
-                    <h2 className="text-2xl font-bold text-foreground mb-2">Welcome Back</h2>
-                    <p className="text-sm text-muted-foreground">
-                        Sign in to manage your tournaments and track your stats.
-                    </p>
-                </div>
+      <form className="space-y-5" onSubmit={handleSubmit}>
+        <div>
+          <Label
+            htmlFor="phone_number"
+            className="block font-mono text-[10px] uppercase tracking-[0.2em] text-mute-2 mb-2"
+          >
+            Phone number
+          </Label>
+          <PhoneInput
+            value={phoneNumber}
+            onChange={setPhoneNumber}
+            required
+          />
+        </div>
 
-                {error && (
-                    <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center">
-                        {error}
-                    </div>
-                )}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <Label
+              htmlFor="password"
+              className="block font-mono text-[10px] uppercase tracking-[0.2em] text-mute-2"
+            >
+              Password
+            </Label>
+            <Link
+              href="/forgot-password"
+              className="text-[12px] font-medium text-navy hover:underline underline-offset-2"
+            >
+              Forgot?
+            </Link>
+          </div>
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="h-12 rounded-md border-rule bg-bone/40 focus-visible:ring-navy/20 focus-visible:border-navy text-[15px]"
+          />
+        </div>
 
-                <form className="space-y-5" onSubmit={handleSubmit}>
-                    <div className="space-y-2">
-                        <Label htmlFor="phone_number" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Phone Number</Label>
-                        <PhoneInput
-                            value={phoneNumber}
-                            onChange={setPhoneNumber}
-                            required
-                        />
-                    </div>
+        <Button
+          type="submit"
+          disabled={loading}
+          className="group w-full h-12 mt-2 rounded-pill bg-ink text-white text-[14px] font-bold hover:bg-navy transition-colors disabled:opacity-60"
+        >
+          {loading ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <span className="inline-flex items-center gap-2">
+              Sign in
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </span>
+          )}
+        </Button>
+      </form>
 
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                            <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Password</Label>
-                            <Link href="/forgot-password" className="text-xs font-medium text-electric hover:underline">
-                                Forgot password?
-                            </Link>
-                        </div>
-                        <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="••••••••"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="search-input-dark pl-10 h-12 rounded-xl border-border/20"
-                            />
-                        </div>
-                    </div>
-
-                    <Button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full h-12 rounded-xl bg-electric hover:bg-electric/90 text-[#030e10] font-bold text-base glow-cyan transition-all mt-6"
-                    >
-                        {loading ? (
-                            <Loader2 className="h-5 w-5 animate-spin" />
-                        ) : (
-                            <>
-                                Sign In
-                                <ArrowRight className="ml-2 h-4 w-4" />
-                            </>
-                        )}
-                    </Button>
-                </form>
-
-                <div className="mt-8 text-center">
-                    <p className="text-sm text-muted-foreground">
-                        Don&apos;t have an account?{" "}
-                        <Link href="/register" className="font-semibold text-electric hover:underline transition-colors">
-                            Sign up free
-                        </Link>
-                    </p>
-                </div>
-            </div>
-
-            <div className="mt-8 text-center">
-                <Link href="/" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Home
-                </Link>
-            </div>
-        </>
-    );
+      <p className="mt-8 text-[14px] text-mute">
+        Don&rsquo;t have an account?{" "}
+        <Link
+          href="/register"
+          className="font-semibold text-ink hover:underline underline-offset-2"
+        >
+          Sign up free
+        </Link>
+      </p>
+    </AuthShell>
+  );
 }

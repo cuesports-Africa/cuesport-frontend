@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-    ArrowLeft, Mail, Lock, User, ArrowRight,
+    Mail, Lock, User, ArrowUpRight,
     Calendar, Loader2, MapPin, AtSign, ChevronLeft, Check, CreditCard, Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { Logo } from "@/components/layout/logo";
+import { AuthShell } from "@/components/auth/auth-shell";
 import { authApi, locationApi, type GeographicUnit } from "@/lib/api";
 
 interface WardResult {
@@ -229,73 +229,54 @@ export default function RegisterPage() {
         }
     }
 
-    const labelClass = "text-xs font-semibold uppercase tracking-wider text-muted-foreground";
-    const inputClass = "search-input-dark pl-10 h-12 rounded-xl border-border/20";
+    const labelClass = "block font-mono text-[10px] uppercase tracking-[0.2em] text-mute-2";
+    const inputClass = "pl-10 h-12 rounded-md border-rule bg-bone/40 focus-visible:ring-navy/20 focus-visible:border-navy text-[15px]";
 
     return (
-        <>
-            <div className="flex justify-center mb-8">
-                <div className="inline-block transition-transform hover:scale-105">
-                    <Logo variant="white" showTagline={false} size="lg" />
+        <AuthShell
+            imageSrc="https://images.unsplash.com/photo-1707916041849-927236f6b4c8?w=1600&auto=format&fit=crop&q=80"
+            imageAlt=""
+            kicker="Join the record"
+            tagline="From your local hall to the national stage."
+        >
+            <div className="mb-7">
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-mute-2">
+                    Create account
+                </p>
+                <h1 className="mt-3 text-[clamp(1.875rem,3vw,2.5rem)] font-extrabold leading-[1.05] tracking-[-0.025em] text-ink">
+                    {step === 1 ? "Start your account." : "Tell us about you."}
+                </h1>
+                <p className="mt-3 text-[15px] leading-[1.55] text-mute">
+                    {step === 1 ? "Your details for signing in." : "A bit of profile information to get you ranked."}
+                </p>
+            </div>
+
+            {/* Step indicator */}
+            <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-mute-2">
+                        Step {step} of 2 — {step === 1 ? "Account" : "Profile"}
+                    </span>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-mute-2 nums-tabular">
+                        {step === 1 ? "50%" : "100%"}
+                    </span>
+                </div>
+                <div className="h-[3px] w-full rounded-full bg-bone overflow-hidden">
+                    <div
+                        className="h-full rounded-full bg-navy transition-all duration-500 ease-out"
+                        style={{ width: step === 1 ? "50%" : "100%" }}
+                    />
                 </div>
             </div>
 
-            <div className="card-dark rounded-3xl p-6 sm:p-8 shadow-2xl border border-border/20 backdrop-blur-xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-electric to-transparent opacity-50" />
-
-                {/* Header */}
-                <div className="mb-6 text-center">
-                    <h2 className="text-2xl font-bold text-foreground mb-1">Create an Account</h2>
-                    <p className="text-sm text-muted-foreground">
-                        {step === 1 ? "Set up your login details" : "Tell us a bit about yourself"}
-                    </p>
+            {(error || stepError) && (
+                <div
+                    role="alert"
+                    className="mb-5 px-4 py-3 rounded-md border border-destructive/30 bg-destructive/[0.04] text-destructive text-[13px]"
+                >
+                    {error || stepError}
                 </div>
-
-                {/* Step indicator */}
-                <div className="mb-6">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-medium text-muted-foreground">
-                            Step {step} of 2
-                        </span>
-                        <span className="text-xs font-medium text-muted-foreground">
-                            {step === 1 ? "Account" : "Profile"}
-                        </span>
-                    </div>
-                    <div className="h-1.5 w-full rounded-full bg-muted/30 overflow-hidden">
-                        <div
-                            className="h-full rounded-full bg-electric transition-all duration-500 ease-out"
-                            style={{ width: step === 1 ? "50%" : "100%" }}
-                        />
-                    </div>
-                    {/* Step dots */}
-                    <div className="flex items-center justify-between mt-3">
-                        <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-electric flex items-center justify-center">
-                                {step > 1
-                                    ? <Check className="h-3.5 w-3.5 text-[#030e10]" />
-                                    : <span className="text-xs font-bold text-[#030e10]">1</span>
-                                }
-                            </div>
-                            <span className="text-xs font-medium text-electric hidden sm:inline">Account</span>
-                        </div>
-                        <div className="flex-1 mx-3 h-px bg-border/30" />
-                        <div className="flex items-center gap-2">
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
-                                step >= 2 ? "bg-electric" : "bg-muted/40 border border-border/30"
-                            }`}>
-                                <span className={`text-xs font-bold ${step >= 2 ? "text-[#030e10]" : "text-muted-foreground"}`}>2</span>
-                            </div>
-                            <span className={`text-xs font-medium hidden sm:inline ${step >= 2 ? "text-electric" : "text-muted-foreground"}`}>Profile</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Error displays */}
-                {(error || stepError) && (
-                    <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center">
-                        {error || stepError}
-                    </div>
-                )}
+            )}
 
                 {/* Step 1: Account Details */}
                 {step === 1 && (
@@ -308,7 +289,6 @@ export default function RegisterPage() {
                                     <Input
                                         id="first_name"
                                         type="text"
-                                        placeholder="John"
                                         required
                                         value={firstName}
                                         onChange={(e) => setFirstName(e.target.value)}
@@ -323,7 +303,6 @@ export default function RegisterPage() {
                                     <Input
                                         id="last_name"
                                         type="text"
-                                        placeholder="Doe"
                                         required
                                         value={lastName}
                                         onChange={(e) => setLastName(e.target.value)}
@@ -340,7 +319,6 @@ export default function RegisterPage() {
                                 <Input
                                     id="nickname"
                                     type="text"
-                                    placeholder="e.g. The Cue Master"
                                     required
                                     minLength={2}
                                     maxLength={30}
@@ -359,7 +337,6 @@ export default function RegisterPage() {
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="name@example.com"
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -385,7 +362,6 @@ export default function RegisterPage() {
                                     <Input
                                         id="password"
                                         type="password"
-                                        placeholder="Create a password"
                                         required
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
@@ -401,7 +377,6 @@ export default function RegisterPage() {
                                     <Input
                                         id="password_confirmation"
                                         type="password"
-                                        placeholder="Confirm password"
                                         required
                                         value={passwordConfirmation}
                                         onChange={(e) => setPasswordConfirmation(e.target.value)}
@@ -414,10 +389,12 @@ export default function RegisterPage() {
                         <Button
                             type="button"
                             onClick={handleNext}
-                            className="w-full h-12 rounded-xl bg-electric hover:bg-electric/90 text-[#030e10] font-bold text-base glow-cyan transition-all mt-2"
+                            className="group w-full h-12 mt-2 rounded-pill bg-ink text-white text-[14px] font-bold hover:bg-navy transition-colors"
                         >
-                            Continue
-                            <ArrowRight className="ml-2 h-4 w-4" />
+                            <span className="inline-flex items-center gap-2">
+                                Continue
+                                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                            </span>
                         </Button>
                     </div>
                 )}
@@ -426,18 +403,18 @@ export default function RegisterPage() {
                 {step === 2 && (
                     <form className="space-y-4" onSubmit={handleSubmit}>
                         {/* Summary of step 1 */}
-                        <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/20 border border-border/10">
-                            <div className="w-10 h-10 rounded-full bg-electric/10 flex items-center justify-center shrink-0">
-                                <User className="h-5 w-5 text-electric" />
+                        <div className="flex items-center gap-3 p-3 rounded-md bg-bone/60 border border-rule">
+                            <div className="w-9 h-9 rounded-full bg-navy/10 flex items-center justify-center shrink-0">
+                                <User className="h-4 w-4 text-navy" />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <p className="text-sm font-medium text-foreground truncate">{firstName} {lastName}</p>
-                                <p className="text-xs text-muted-foreground truncate">{email}</p>
+                                <p className="text-[14px] font-semibold text-ink truncate">{firstName} {lastName}</p>
+                                <p className="text-[12px] text-mute truncate">{email}</p>
                             </div>
                             <button
                                 type="button"
                                 onClick={handleBack}
-                                className="text-xs font-medium text-electric hover:underline shrink-0"
+                                className="font-mono text-[10px] uppercase tracking-[0.18em] text-navy hover:underline shrink-0"
                             >
                                 Edit
                             </button>
@@ -463,7 +440,7 @@ export default function RegisterPage() {
                             <div className="space-y-2">
                                 <Label htmlFor="gender" className={labelClass}>Gender</Label>
                                 <Select value={gender} onValueChange={setGender} required>
-                                    <SelectTrigger className="search-input-dark h-12 rounded-xl border-border/20 w-full">
+                                    <SelectTrigger className="h-12 rounded-md border-rule bg-bone/40 focus-visible:ring-navy/20 focus-visible:border-navy text-[15px] w-full">
                                         <SelectValue placeholder="Select" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -485,7 +462,6 @@ export default function RegisterPage() {
                                 <Input
                                     id="national_id"
                                     type="text"
-                                    placeholder="e.g. 12345678"
                                     maxLength={50}
                                     value={nationalIdNumber}
                                     onChange={(e) => setNationalIdNumber(e.target.value)}
@@ -505,7 +481,7 @@ export default function RegisterPage() {
                             <div className="space-y-1.5">
                                 <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">Country</span>
                                 <Select value={countryId} onValueChange={handleCountryChange} required disabled={loadingCountries}>
-                                    <SelectTrigger className="search-input-dark h-11 rounded-xl border-border/20 w-full">
+                                    <SelectTrigger className="h-11 rounded-md border-rule bg-bone/40 focus-visible:ring-navy/20 focus-visible:border-navy text-[15px] w-full">
                                         <SelectValue placeholder={loadingCountries ? "Loading..." : "Select country"} />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -526,7 +502,7 @@ export default function RegisterPage() {
                                     </span>
                                     <div className="relative" ref={wardDropdownRef}>
                                         {selectedWard ? (
-                                            <div className="search-input-dark h-11 rounded-xl border-border/20 px-3 flex items-center justify-between">
+                                            <div className="h-11 rounded-md border-rule bg-bone/40 focus-visible:ring-navy/20 focus-visible:border-navy text-[15px] px-3 flex items-center justify-between">
                                                 <div className="min-w-0">
                                                     <span className="text-sm text-foreground">{selectedWard.name}</span>
                                                     <span className="text-xs text-muted-foreground ml-2 hidden sm:inline">
@@ -536,7 +512,7 @@ export default function RegisterPage() {
                                                 <button
                                                     type="button"
                                                     onClick={clearWard}
-                                                    className="text-xs font-medium text-electric hover:underline shrink-0 ml-2"
+                                                    className="text-xs font-medium text-navy hover:underline shrink-0 ml-2"
                                                 >
                                                     Change
                                                 </button>
@@ -553,7 +529,7 @@ export default function RegisterPage() {
                                                             setWardQuery(e.target.value);
                                                             setSelectedWard(null);
                                                         }}
-                                                        className="search-input-dark pl-9 h-11 rounded-xl border-border/20"
+                                                        className="pl-9 h-11 rounded-md border-rule bg-bone/40 focus-visible:ring-navy/20 focus-visible:border-navy text-[15px]"
                                                     />
                                                     {wardSearching && (
                                                         <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
@@ -604,7 +580,7 @@ export default function RegisterPage() {
                                         </div>
                                     ) : communities.length > 0 ? (
                                         <Select value={communityId} onValueChange={setCommunityId} required>
-                                            <SelectTrigger className="search-input-dark h-11 rounded-xl border-border/20 w-full">
+                                            <SelectTrigger className="h-11 rounded-md border-rule bg-bone/40 focus-visible:ring-navy/20 focus-visible:border-navy text-[15px] w-full">
                                                 <SelectValue placeholder="Select community" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -623,7 +599,7 @@ export default function RegisterPage() {
 
                             {/* Completion indicator */}
                             {isLocationComplete && (
-                                <div className="flex items-center gap-2 text-xs text-emerald-400">
+                                <div className="flex items-center gap-2 text-xs text-emerald-600">
                                     <Check className="h-3.5 w-3.5" />
                                     Location complete
                                 </div>
@@ -635,7 +611,7 @@ export default function RegisterPage() {
                                 type="button"
                                 onClick={handleBack}
                                 variant="ghost"
-                                className="h-12 rounded-xl px-5 text-muted-foreground hover:text-foreground font-medium"
+                                className="h-12 rounded-pill px-5 text-mute hover:text-ink hover:bg-bone font-medium"
                             >
                                 <ChevronLeft className="mr-1 h-4 w-4" />
                                 Back
@@ -643,37 +619,30 @@ export default function RegisterPage() {
                             <Button
                                 type="submit"
                                 disabled={loading || !isLocationComplete}
-                                className="flex-1 h-12 rounded-xl bg-electric hover:bg-electric/90 text-[#030e10] font-bold text-base glow-cyan transition-all"
+                                className="group flex-1 h-12 rounded-pill bg-ink text-white text-[14px] font-bold hover:bg-navy transition-colors disabled:opacity-60"
                             >
                                 {loading ? (
                                     <Loader2 className="h-5 w-5 animate-spin" />
                                 ) : (
-                                    <>
-                                        Create Account
-                                        <ArrowRight className="ml-2 h-4 w-4" />
-                                    </>
+                                    <span className="inline-flex items-center gap-2">
+                                        Create account
+                                        <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                                    </span>
                                 )}
                             </Button>
                         </div>
                     </form>
                 )}
 
-                <div className="mt-6 text-center">
-                    <p className="text-sm text-muted-foreground">
-                        Already have an account?{" "}
-                        <Link href="/login" className="font-semibold text-electric hover:underline transition-colors">
-                            Sign in
-                        </Link>
-                    </p>
-                </div>
-            </div>
-
-            <div className="mt-8 text-center">
-                <Link href="/" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Home
+            <p className="mt-8 text-[14px] text-mute">
+                Already have an account?{" "}
+                <Link
+                    href="/login"
+                    className="font-semibold text-ink hover:underline underline-offset-2"
+                >
+                    Sign in
                 </Link>
-            </div>
-        </>
+            </p>
+        </AuthShell>
     );
 }

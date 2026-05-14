@@ -1,12 +1,7 @@
 import { NavItem } from "@/types";
-import { Sparkles, Trophy, TrendingUp, Newspaper, CreditCard } from "lucide-react";
+import { Trophy, TrendingUp, Newspaper, BookOpen } from "lucide-react";
 
 export const mainNavItems: NavItem[] = [
-  {
-    title: "Features",
-    href: "/features",
-    icon: Sparkles,
-  },
   {
     title: "Tournaments",
     href: "/tournaments",
@@ -23,9 +18,9 @@ export const mainNavItems: NavItem[] = [
     icon: Newspaper,
   },
   {
-    title: "Pricing",
-    href: "/pricing",
-    icon: CreditCard,
+    title: "Rules",
+    href: "/rules",
+    icon: BookOpen,
   },
 ];
 

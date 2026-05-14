@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PricingCards } from "@/components/pricing-cards";
 import { JsonLd } from "@/components/seo/json-ld";
 import { AppDownloadButton } from "@/components/app-download-button";
+import { ArrowUpRight } from "lucide-react";
 import {
   ArrowRight,
   Check,
@@ -202,135 +203,77 @@ export default function Home() {
         }}
       />
 
-      {/* ─── Hero Section ─── */}
-      <section className="relative min-h-[90vh] overflow-hidden hero-gradient flex items-center">
-        {/* Background orbs */}
+      {/* ─── Hero — atmospheric photo background, extends behind header ─── */}
+      <section className="relative isolate overflow-hidden bg-ink text-white min-h-[88vh] flex flex-col -mt-[60px] sm:-mt-[68px] pt-[60px] sm:pt-[68px]">
+        <Image
+          src="https://images.unsplash.com/photo-1714564209284-1ba07d735e76?w=2400&auto=format&fit=crop&q=80"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center -z-20"
+        />
         <div
-          className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
+          aria-hidden
+          className="absolute inset-0 -z-10"
           style={{
-            background: "radial-gradient(ellipse, rgba(0,191,191,0.08) 0%, transparent 70%)",
+            background:
+              "linear-gradient(90deg, rgba(10,22,40,0.92) 0%, rgba(10,22,40,0.75) 38%, rgba(10,22,40,0.45) 72%, rgba(10,22,40,0.3) 100%)",
           }}
         />
         <div
-          className="absolute bottom-0 right-0 w-96 h-96 rounded-full pointer-events-none"
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-40 -z-10"
           style={{
-            background: "radial-gradient(ellipse, rgba(0,245,255,0.05) 0%, transparent 70%)",
+            background:
+              "linear-gradient(180deg, transparent 0%, rgba(10,22,40,0.55) 100%)",
           }}
         />
+        <div className="relative flex-1 flex flex-col mx-auto max-w-6xl w-full px-5 sm:px-8 lg:px-12 pt-16 pb-14 lg:pt-24 lg:pb-16">
+          <div className="flex-1 flex flex-col justify-center max-w-[760px]">
+              <h1 className="text-[clamp(2.75rem,6.6vw,5.75rem)] font-extrabold leading-[0.96] tracking-[-0.035em] text-white">
+                Run the table.
+              </h1>
 
-        <div className="container mx-auto px-4 relative z-10 py-20 lg:py-28">
-          <div className="max-w-4xl mx-auto text-center">
-            {/* Pill badge */}
-            <div className="flex justify-center mb-8">
-              <span className="badge-pill animate-slide-up">
-                <Trophy className="h-3.5 w-3.5" />
-                Africa&apos;s #1 Pool Tournament Platform
-              </span>
-            </div>
-
-            {/* Headline */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight mb-6 text-foreground">
-              Tournament{" "}
-              <span className="shimmer-text">infrastructure</span>
-              <br />
-              for{" "}
-              <span className="text-electric text-glow">African pool</span>
-            </h1>
-
-            {/* Subheadline */}
-            <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-              The complete platform for running professional pool tournaments.
-              Brackets, ratings, payments, and rankings — everything you need to
-              grow the game across Africa.
-            </p>
-
-            {/* Search bar (TukioHub style) */}
-            <div className="max-w-xl mx-auto mb-8">
-              <div className="relative flex items-center">
-                <Search className="absolute left-5 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
-                <input
-                  type="text"
-                  placeholder="Search tournaments, players, venues..."
-                  className="search-input-dark w-full pl-12 pr-32 py-3.5 text-sm"
-                />
-                <Button
-                  size="sm"
-                  className="absolute right-2 bg-electric text-[#030e10] font-semibold hover:bg-electric/90 rounded-full px-4 h-8 text-xs"
-                >
-                  Find Events
-                </Button>
-              </div>
-            </div>
-
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href="/tournaments">
-                <Button
-                  size="lg"
-                  className="bg-electric text-[#030e10] font-semibold hover:bg-electric/90 glow-cyan h-12 px-7 rounded-full text-sm"
-                >
-                  View Tournaments
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-              <Link
-                href="/about/contact"
-                className="flex items-center gap-2 text-muted-foreground hover:text-electric font-medium transition-colors text-sm px-4 py-3"
-              >
-                Contact sales
-                <ChevronRight className="h-4 w-4" />
-              </Link>
-            </div>
-
-            {/* App Download Buttons */}
-            <div className="flex items-center justify-center gap-3 mt-6">
-              {/* Google Play / Android */}
-              <AppDownloadButton
-                className="flex items-center gap-2.5 bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/30 rounded-xl px-5 py-2.5 transition-all group"
-              >
-                <svg viewBox="0 0 24 24" className="h-6 w-6 flex-shrink-0" fill="none">
-                  <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92z" fill="#4285F4"/>
-                  <path d="M17.556 8.243l-3.764 3.757 3.764 3.757 4.246-2.384a1.098 1.098 0 0 0 0-1.946l-4.246-2.184z" fill="#FBBC04"/>
-                  <path d="M3.609 1.814L13.792 12l3.764-3.757L5.7.472C5.267.237 4.776.15 4.303.253c-.29.063-.56.2-.694.561z" fill="#34A853"/>
-                  <path d="M13.792 12L3.61 22.186c.15.39.41.56.694.56.473.104.964.017 1.396-.218l11.856-6.771L13.792 12z" fill="#EA4335"/>
-                </svg>
-                <div className="text-left">
-                  <div className="text-[9px] uppercase tracking-wider text-white/60 leading-none">Get it on</div>
-                  <div className="text-sm font-semibold text-white leading-tight">Google Play</div>
-                </div>
-              </AppDownloadButton>
-
-              {/* App Store / iOS — Coming Soon */}
-              <div
-                className="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-xl px-5 py-2.5 opacity-50 cursor-not-allowed relative"
-              >
-                <svg viewBox="0 0 24 24" className="h-6 w-6 flex-shrink-0 text-white/40" fill="currentColor">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                </svg>
-                <div className="text-left">
-                  <div className="text-[9px] uppercase tracking-wider text-white/40 leading-none">Download on the</div>
-                  <div className="text-sm font-semibold text-white/40 leading-tight">App Store</div>
-                </div>
-                <span className="absolute -top-2 -right-2 bg-electric/90 text-[#030e10] text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide">Soon</span>
-              </div>
-            </div>
-
-            {/* Partners Logo Strip */}
-            <div className="mt-16 pt-10 border-t border-border/20 text-center animate-slide-up" style={{ animationDelay: "0.2s" }}>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-6 label-caps">
-                Trusted by Top African Organizers
+              <p className="mt-4 text-[clamp(1.15rem,1.8vw,1.5rem)] italic font-light text-white/70 leading-[1.2] tracking-tight">
+                Africa&rsquo;s home of cue sports.
               </p>
-              <div className="flex justify-center opacity-70 hover:opacity-100 transition-opacity">
-                <Image
-                  src="/partners.png"
-                  alt="Partner Logos"
-                  width={800}
-                  height={120}
-                  className="h-10 md:h-12 w-auto object-contain"
-                  priority
-                  fetchPriority="high"
-                />
+
+              <p className="mt-7 max-w-[52ch] text-[15px] md:text-[17px] leading-[1.55] text-white/75">
+                Find a tournament near you. Play your match.
+                <br />
+                Climb the rankings — across the continent.
+              </p>
+
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  href="/tournaments"
+                  className="group inline-flex items-center gap-2 h-12 pl-6 pr-2 rounded-pill bg-gold text-ink text-[14px] font-bold hover:brightness-95 transition-all"
+                >
+                  Find a tournament
+                  <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-ink/15 group-hover:bg-ink/25 transition-colors">
+                    <ArrowUpRight className="h-4 w-4" />
+                  </span>
+                </Link>
+                <Link
+                  href="/register"
+                  className="inline-flex items-center h-12 px-6 rounded-pill border border-white/25 text-white font-medium text-[14px] hover:bg-white/5 transition-colors"
+                >
+                  For organizers
+                </Link>
               </div>
+
+          </div>
+
+          {/* Bottom hairline strip — separates CTAs from factual footer */}
+          <div className="relative mt-12 lg:mt-16 pt-6 border-t border-white/15">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/55">
+                Pool · Snooker · Billiards · Carrom
+              </p>
+              <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/55 nums-tabular">
+                2,000+ organizers · 46 countries · 1M+ players
+              </p>
             </div>
           </div>
         </div>
