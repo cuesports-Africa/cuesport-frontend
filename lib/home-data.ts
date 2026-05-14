@@ -1,26 +1,32 @@
 /**
  * Home page data layer — server-side fetching for the marketing landing page.
  *
- * Uses `serverFetch` so the homepage stays a Server Component:
- *   - data is in initial HTML (great LCP, SEO-friendly)
- *   - Next.js handles caching via ISR (`next: { revalidate }`)
- *   - failures here MUST NOT crash the page — every fetch is wrapped and falls
- *     back to a safe empty shape.
+ * Why /players/leaderboard (and not /players/rankings):
+ *   - /players/rankings silently SWALLOWS `?gender=` and returns the same
+ *     mixed roster for both calls (verified live against api.cuesports.africa).
+ *   - /players/leaderboard requires a country_id but properly honours the
+ *     gender filter and returns RankedPlayer-shaped rows (despite the older
+ *     LeaderboardPlayer type in lib/api.ts).
+ *   - We anchor to Kenya (country_id=2) because that's where the data lives
+ *     today. Override via NEXT_PUBLIC_FEATURED_COUNTRY_ID if needed.
  *
  * Cadences:
  *   - Pulse (live activity): 60s revalidate
  *   - Rankings (slower-moving): 600s revalidate
+ *
+ * Failures MUST NOT crash the page — every fetch is wrapped and falls back
+ * to a safe empty shape.
  */
 import { serverFetch } from "@/lib/api-server";
 import type {
-  LeaderboardResponse,
   MatchesFeedResponse,
+  RankedPlayer,
+  RankingsResponse,
 } from "@/lib/api";
 
-// The "featured" country whose leaderboard we surface on the home page.
-// Gender-split rankings only exist at country scope today — see TODO at file end.
+// Kenya = 2 (verified via /api/locations/countries).
 const FEATURED_COUNTRY_ID = Number(
-  process.env.NEXT_PUBLIC_FEATURED_COUNTRY_ID ?? 1,
+  process.env.NEXT_PUBLIC_FEATURED_COUNTRY_ID ?? 2,
 );
 
 export type HomePulse = {
@@ -67,15 +73,38 @@ function derivePulse(feed: MatchesFeedResponse | null): HomePulse {
   };
 }
 
-function mapLeaderboard(resp: LeaderboardResponse | null): HomeRankingRow[] {
+function composeOrigin(p: RankedPlayer): string {
+  const locality = p.county || p.community;
+  const country = p.country?.name;
+  if (locality && country) return `${locality} · ${country}`;
+  return locality || country || "—";
+}
+
+// The live API returns a few fields the older TS interface doesn't capture.
+type LiveRankedPlayer = RankedPlayer & {
+  gender_country_rank?: number;
+  country_rank?: number;
+};
+
+function mapRankings(resp: RankingsResponse | null): HomeRankingRow[] {
   if (!resp?.data) return [];
-  return resp.data.slice(0, 10).map((p, i) => ({
-    // country_rank can be 0/undefined for very small datasets — fall back to array index.
-    rank: p.country_rank && p.country_rank > 0 ? p.country_rank : i + 1,
-    name: p.name,
-    origin: p.location ?? p.country?.name ?? "—",
-    points: Math.round(p.rating),
-  }));
+  return resp.data.slice(0, 10).map((p, i) => {
+    const live = p as LiveRankedPlayer;
+    // Prefer gender_country_rank when present (it's the position within the
+    // currently-filtered gender bucket). Fall back to overall rank, then index.
+    const rank =
+      (live.gender_country_rank && live.gender_country_rank > 0
+        ? live.gender_country_rank
+        : null) ??
+      (live.rank && live.rank > 0 ? live.rank : null) ??
+      i + 1;
+    return {
+      rank,
+      name: p.full_name || `${p.first_name} ${p.last_name}`.trim(),
+      origin: composeOrigin(p),
+      points: Math.round(p.rating),
+    };
+  });
 }
 
 export async function getHomeData(): Promise<HomeData> {
@@ -84,11 +113,11 @@ export async function getHomeData(): Promise<HomeData> {
     serverFetch<MatchesFeedResponse>("/matches/feed", { revalidate: 60 }).catch(
       () => null,
     ),
-    serverFetch<LeaderboardResponse>(
+    serverFetch<RankingsResponse>(
       `/players/leaderboard?country_id=${FEATURED_COUNTRY_ID}&gender=male&per_page=10`,
       { revalidate: 600 },
     ).catch(() => null),
-    serverFetch<LeaderboardResponse>(
+    serverFetch<RankingsResponse>(
       `/players/leaderboard?country_id=${FEATURED_COUNTRY_ID}&gender=female&per_page=10`,
       { revalidate: 600 },
     ).catch(() => null),
@@ -96,8 +125,8 @@ export async function getHomeData(): Promise<HomeData> {
 
   return {
     pulse: derivePulse(feed),
-    rankingsMen: mapLeaderboard(men),
-    rankingsWomen: mapLeaderboard(women),
+    rankingsMen: mapRankings(men),
+    rankingsWomen: mapRankings(women),
     rankingsUpdatedAt: new Date().toLocaleDateString("en-GB", {
       day: "numeric",
       month: "long",
@@ -106,6 +135,6 @@ export async function getHomeData(): Promise<HomeData> {
   };
 }
 
-// TODO(backend): add `gender` param to `/players/rankings` so the homepage can show a
-// truly continental Top 10 by gender. Also add `venues_active` + `countries_active`
-// to `/matches/feed.stats` so the Pulse band doesn't have to derive them client-side.
+// TODO(backend): add `venues_active` + `countries_active` to /matches/feed.stats so the
+// Pulse band doesn't have to derive them client-side. Also formally expose `gender` on
+// the /players/rankings TypeScript client (it works at the API level already).

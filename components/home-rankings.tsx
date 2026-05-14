@@ -26,13 +26,13 @@ export function HomeRankings({ men, women, updatedAt }: Props) {
         {/* Section header */}
         <div className="mb-12 lg:mb-16">
           <p className="mb-5 font-mono text-[11px] uppercase tracking-[0.2em] text-white/55">
-            Top of the Table
+            The Continental Top 10
           </p>
           <h2
             id="home-rankings-heading"
             className="text-[clamp(2.5rem,5.6vw,4.5rem)] font-extrabold leading-[0.96] tracking-[-0.035em] text-white"
           >
-            Where the best play.
+            Africa&rsquo;s best.
           </h2>
           <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.18em] text-white/45 tabular-nums">
             Updated weekly · {updatedAt}
