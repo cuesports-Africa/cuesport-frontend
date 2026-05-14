@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import heroImage from "@/public/hero.jpg";
 import heroMobileImage from "@/public/hero-mobile.jpg";
+import whyImage from "@/public/why.jpg";
+import spotlightImage from "@/public/spotlight.jpg";
 import { Button } from "@/components/ui/button";
 import { HomeRankings } from "@/components/home-rankings";
 import { getHomeData } from "@/lib/home-data";
@@ -347,6 +349,201 @@ export default async function Home() {
         women={rankingsWomen}
         updatedAt={rankingsUpdatedAt}
       />
+
+      {/* ─── The Why — brand essay, magazine spread (light act, soft mesh) ─── */}
+      <section
+        className="relative overflow-hidden py-20 text-ink lg:py-28"
+        aria-labelledby="home-why-heading"
+        style={{
+          // Layered: subtle brand-blue mesh top-left, subtle gold mesh bottom-right,
+          // sitting on a soft neutral grey base. All very low opacity so the page reads
+          // as "grey paper with a hint of brand" rather than coloured.
+          background:
+            "radial-gradient(ellipse 70% 55% at 12% 18%, rgba(0,78,134,0.10), transparent 60%), radial-gradient(ellipse 60% 50% at 88% 82%, rgba(201,162,39,0.07), transparent 55%), #ECECEE",
+        }}
+      >
+        {/* Subtle film grain to keep the mesh from looking flat — pure CSS, no asset */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.025]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, rgba(0,0,0,1) 1px, transparent 0)",
+            backgroundSize: "3px 3px",
+          }}
+        />
+
+        <div className="relative mx-auto max-w-6xl px-5 sm:px-8 lg:px-12">
+          <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
+
+            {/* Image — atmospheric portrait, sits like a printed plate on the page */}
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-zinc-300 shadow-[0_30px_60px_-30px_rgba(0,78,134,0.35)] ring-1 ring-zinc-900/5">
+              <Image
+                src={whyImage}
+                alt=""
+                fill
+                placeholder="blur"
+                quality={75}
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                className="object-cover object-center"
+              />
+            </div>
+
+            {/* Text — eyebrow, headline, body, quiet link */}
+            <div className="flex flex-col justify-center">
+              <p className="mb-6 font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+                Why we&rsquo;re here
+              </p>
+              <h2
+                id="home-why-heading"
+                className="text-[clamp(2.5rem,5.6vw,4.5rem)] font-extrabold leading-[0.96] tracking-[-0.035em] text-ink"
+              >
+                Pool was always African.
+              </h2>
+              <p className="mt-8 max-w-[58ch] text-[clamp(1.05rem,1.4vw,1.25rem)] font-normal leading-[1.55] text-zinc-700">
+                The game has lived in halls and clubs across the continent for decades — played
+                seriously, never seen. CueSports Africa exists because pool deserved more than that.
+                A record. A ranking. A real path from the county hall to the continental stage.
+              </p>
+              <Link
+                href="/about"
+                className="group mt-10 inline-flex items-center gap-2 text-[14px] font-semibold transition-opacity hover:opacity-80"
+                style={{ color: "#004E86" }}
+              >
+                Read our story
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Player Spotlight — long-form magazine feature (light act) ─── */}
+      <section
+        className="relative overflow-hidden bg-zinc-100 py-20 text-ink lg:py-28"
+        aria-labelledby="home-spotlight-heading"
+      >
+        {/* Subtle film grain — same texture as The Why for paper consistency */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.025]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, rgba(0,0,0,1) 1px, transparent 0)",
+            backgroundSize: "3px 3px",
+          }}
+        />
+        {/* Single quiet brand-blue glow, off-center — quieter mesh than The Why */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 50% 40% at 70% 20%, rgba(0,78,134,0.06), transparent 65%)",
+          }}
+        />
+
+        <article className="relative mx-auto max-w-6xl px-5 sm:px-8 lg:px-12">
+
+          {/* Top header — left-aligned magazine-cover style */}
+          <header className="max-w-3xl">
+            <p className="mb-5 font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+              Spotlight · Volume 01
+            </p>
+            <h2
+              id="home-spotlight-heading"
+              className="text-[clamp(2.25rem,4.8vw,3.75rem)] font-extrabold leading-[0.98] tracking-[-0.03em] text-ink"
+            >
+              The night his name<br className="hidden sm:block" /> went on the wall.
+            </h2>
+            <p className="mt-6 max-w-[55ch] text-[clamp(1.05rem,1.4vw,1.25rem)] font-normal leading-[1.5] text-zinc-700">
+              From weekend money games in Kakamega to the continental top ten —
+              the patient apprenticeship of a player you&rsquo;ll soon hear shouted in halls
+              from Mombasa to Lagos.
+            </p>
+            <p className="mt-7 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+              <span>Words · CueSports Africa Editorial</span>
+              <span aria-hidden className="text-zinc-300">·</span>
+              <span>6 min read</span>
+            </p>
+          </header>
+
+          {/* Hero photograph — full-width landscape plate */}
+          <figure className="relative mt-12 lg:mt-16">
+            <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-zinc-300 shadow-[0_40px_80px_-40px_rgba(0,78,134,0.35)] ring-1 ring-zinc-900/5">
+              <Image
+                src={spotlightImage}
+                alt=""
+                fill
+                placeholder="blur"
+                quality={75}
+                sizes="(min-width: 1024px) 1024px, 100vw"
+                className="object-cover object-center"
+              />
+            </div>
+            <figcaption className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+              Photograph · Edouard Tamba
+            </figcaption>
+          </figure>
+
+          {/* Body — pull quote + meta + CTA */}
+          <div className="mx-auto mt-14 max-w-3xl lg:mt-20">
+
+            {/* Pull quote — the soul of the piece, brand blue */}
+            <blockquote className="border-l-2 border-zinc-300 pl-6 lg:pl-8">
+              <p
+                className="text-[clamp(1.4rem,2.6vw,2rem)] font-light italic leading-[1.25] tracking-[-0.015em]"
+                style={{ color: "#004E86" }}
+              >
+                &ldquo;Pool isn&rsquo;t about the table. It&rsquo;s about the table
+                you grew up next to.&rdquo;
+              </p>
+              <footer className="mt-5 font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+                — Featured player, Kakamega Pool Club
+              </footer>
+            </blockquote>
+
+            {/* Bottom row — credentials + CTA */}
+            <div className="mt-14 flex flex-col gap-4 border-t border-zinc-300 pt-8 sm:flex-row sm:items-center sm:justify-between">
+              <dl className="grid grid-cols-3 gap-x-6 gap-y-1">
+                <div>
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                    County
+                  </dt>
+                  <dd className="mt-1 text-[14px] font-semibold text-ink">Kakamega</dd>
+                </div>
+                <div>
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                    Rating
+                  </dt>
+                  <dd className="mt-1 text-[14px] font-semibold tabular-nums text-ink">
+                    1,000
+                  </dd>
+                </div>
+                <div>
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                    Rank
+                  </dt>
+                  <dd className="mt-1 text-[14px] font-semibold tabular-nums text-ink">
+                    #5 KE
+                  </dd>
+                </div>
+              </dl>
+              <Link
+                href="/news"
+                className="group inline-flex items-center gap-2 text-[14px] font-semibold transition-opacity hover:opacity-80"
+                style={{ color: "#004E86" }}
+              >
+                Read the full story
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+
+          </div>
+
+        </article>
+      </section>
 
       {/* ─── Browse by Category + Featured Tournaments ─── */}
       <section className="py-20 lg:py-24">
