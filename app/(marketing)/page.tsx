@@ -4,6 +4,7 @@ import heroImage from "@/public/hero.jpg";
 import heroMobileImage from "@/public/hero-mobile.jpg";
 import whyImage from "@/public/why.jpg";
 import spotlightImage from "@/public/spotlight.jpg";
+import organizersImage from "@/public/organizers.jpg";
 import { Button } from "@/components/ui/button";
 import { HomeRankings } from "@/components/home-rankings";
 import { getHomeData } from "@/lib/home-data";
@@ -285,10 +286,10 @@ export default async function Home() {
           <div className="relative mt-12 lg:mt-16 pt-6 border-t border-white/15">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/55">
-                Pool · Snooker · Billiards · Carrom
+                Africa&rsquo;s home of cue sports
               </p>
               <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/55 nums-tabular">
-                2,000+ organizers · 46 countries · 1M+ players
+                2,000+ organizers · 46 counties · 1M+ players
               </p>
             </div>
           </div>
@@ -543,6 +544,88 @@ export default async function Home() {
           </div>
 
         </article>
+      </section>
+
+      {/* ─── For Organizers — dark, quiet pitch, magazine spread ─── */}
+      <section
+        className="relative overflow-hidden bg-ink py-20 text-white lg:py-28"
+        aria-labelledby="home-organizers-heading"
+      >
+        {/* Subtle radial accent — barely-there warmth from behind the image side */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 55% 50% at 85% 50%, rgba(201,162,39,0.06), transparent 60%)",
+          }}
+        />
+
+        <div className="relative mx-auto max-w-6xl px-5 sm:px-8 lg:px-12">
+          <div className="grid gap-12 lg:grid-cols-[1.35fr_1fr] lg:items-center lg:gap-16">
+
+            {/* Text — left on desktop, top on mobile */}
+            <div>
+              <p className="mb-5 font-mono text-[11px] uppercase tracking-[0.2em] text-white/55">
+                For Organizers
+              </p>
+              <h2
+                id="home-organizers-heading"
+                className="text-[clamp(2.5rem,5.6vw,4.5rem)] font-extrabold leading-[0.96] tracking-[-0.035em] text-white"
+              >
+                The room is yours.
+                <br />
+                <span className="text-white/45">We just keep the record.</span>
+              </h2>
+              <p className="mt-8 max-w-[55ch] text-[clamp(1.05rem,1.4vw,1.25rem)] font-light leading-[1.5] text-white/75">
+                Every tournament that matters started with someone deciding to make it real.
+                The brackets, the entry fees, the names on the wall — we handle the paperwork
+                so you can handle the room.
+              </p>
+
+              <div className="mt-10 flex flex-wrap items-center gap-4">
+                <Link
+                  href="/organizer"
+                  className="group inline-flex h-12 items-center gap-2 rounded-pill bg-gold pl-6 pr-2 text-[14px] font-bold text-ink transition-all hover:brightness-95"
+                >
+                  Host an event
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-ink/15 transition-colors group-hover:bg-ink/25">
+                    <ArrowUpRight className="h-4 w-4" />
+                  </span>
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="inline-flex h-12 items-center px-2 text-[14px] font-medium text-white/65 transition-colors hover:text-white"
+                >
+                  See pricing
+                </Link>
+              </div>
+            </div>
+
+            {/* Image — right on desktop, bottom on mobile */}
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-white/[0.03] ring-1 ring-white/10 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.6)]">
+              <Image
+                src={organizersImage}
+                alt=""
+                fill
+                placeholder="blur"
+                quality={75}
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                className="object-cover object-center"
+              />
+              {/* Soft bottom vignette to anchor it to the dark page */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(180deg, transparent 60%, rgba(10,22,40,0.55) 100%)",
+                }}
+              />
+            </div>
+
+          </div>
+        </div>
       </section>
 
       {/* ─── Browse by Category + Featured Tournaments ─── */}

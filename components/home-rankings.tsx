@@ -165,7 +165,7 @@ export function HomeRankings({ men, women, updatedAt }: Props) {
         {/* Footer */}
         <div className="mt-12 flex flex-col gap-4 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/45">
-            Rankings · Pool · Snooker · 9-Ball · Carrom
+            Rankings · Updated weekly
           </p>
           <Link
             href={gender === "female" ? "/rankings?gender=female" : "/rankings"}
