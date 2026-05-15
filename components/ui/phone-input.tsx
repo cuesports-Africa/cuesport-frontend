@@ -130,43 +130,43 @@ export function PhoneInput({
                         type="button"
                         onClick={() => !loadingCountries && setOpen(!open)}
                         disabled={loadingCountries}
-                        className="search-input-dark h-12 rounded-l-xl rounded-r-none border-border/20 border-r-0 px-3 flex items-center gap-1.5 hover:bg-muted/30 transition-colors shrink-0"
+                        className="h-12 rounded-l-md rounded-r-none border border-r-0 border-rule bg-canvas px-3.5 flex items-center gap-2 transition-colors hover:bg-bone/60 shrink-0"
                     >
                         {loadingCountries ? (
-                            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                            <Loader2 className="h-4 w-4 animate-spin text-mute" />
                         ) : (
                             <>
                                 <span className="text-base leading-none">{selectedCountry?.flag}</span>
-                                <span className="text-sm font-medium text-muted-foreground">{selectedCountry?.dial}</span>
+                                <span className="text-[13px] font-mono tracking-[0.02em] text-ink/70 tabular-nums">{selectedCountry?.dial}</span>
                             </>
                         )}
                         <ChevronDown className={cn(
-                            "h-3.5 w-3.5 text-muted-foreground transition-transform",
+                            "h-3.5 w-3.5 text-mute-2 transition-transform",
                             open && "rotate-180"
                         )} />
                     </button>
 
                     {/* Dropdown */}
                     {open && (
-                        <div className="absolute top-full left-0 mt-1 w-72 max-h-64 bg-background border border-border/30 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150">
+                        <div className="absolute top-full left-0 mt-2 w-72 max-h-64 bg-canvas border border-rule rounded-md shadow-lg z-50 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150">
                             {/* Search */}
-                            <div className="p-2 border-b border-border/20">
+                            <div className="p-2 border-b border-rule">
                                 <div className="relative">
-                                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-mute-2" />
                                     <input
                                         ref={searchRef}
                                         type="text"
-                                        placeholder="Search country..."
+                                        placeholder="Search country…"
                                         value={search}
                                         onChange={(e) => setSearch(e.target.value)}
-                                        className="w-full h-9 pl-8 pr-3 rounded-lg bg-muted/30 border border-border/20 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-electric/40 transition-colors"
+                                        className="w-full h-9 pl-8 pr-3 rounded-sm bg-bone/50 border border-rule text-[13px] text-ink placeholder:text-mute-2 outline-none transition-colors focus:border-ink focus:bg-canvas"
                                     />
                                 </div>
                             </div>
                             {/* Country list */}
                             <div className="overflow-y-auto max-h-48">
                                 {filtered.length === 0 ? (
-                                    <div className="px-3 py-4 text-sm text-muted-foreground text-center">
+                                    <div className="px-3 py-4 text-[13px] text-mute text-center">
                                         No countries found
                                     </div>
                                 ) : (
@@ -176,13 +176,13 @@ export function PhoneInput({
                                             type="button"
                                             onClick={() => handleSelectCountry(country)}
                                             className={cn(
-                                                "w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-muted/40 transition-colors",
-                                                selectedCountry?.code === country.code && "bg-electric/5"
+                                                "w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-bone/60",
+                                                selectedCountry?.code === country.code && "bg-bone"
                                             )}
                                         >
                                             <span className="text-base leading-none">{country.flag}</span>
-                                            <span className="text-sm text-foreground flex-1 truncate">{country.name}</span>
-                                            <span className="text-xs text-muted-foreground font-mono">{country.dial}</span>
+                                            <span className="text-[13.5px] text-ink flex-1 truncate">{country.name}</span>
+                                            <span className="text-[11px] text-mute font-mono tabular-nums">{country.dial}</span>
                                         </button>
                                     ))
                                 )}
@@ -200,7 +200,7 @@ export function PhoneInput({
                     required={required}
                     value={localNumber}
                     onChange={(e) => handleLocalChange(e.target.value)}
-                    className="search-input-dark h-12 rounded-l-none rounded-r-xl border-border/20 flex-1"
+                    className="h-12 rounded-l-none rounded-r-md border-rule bg-canvas px-3.5 text-[15px] tabular-nums tracking-[0.02em] flex-1 transition-colors placeholder:text-mute-2 focus-visible:border-ink focus-visible:ring-0 focus-visible:shadow-[inset_0_-2px_0_0_var(--gold)]"
                 />
             </div>
         </div>

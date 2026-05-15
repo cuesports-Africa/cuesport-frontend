@@ -50,8 +50,8 @@ export default function LoginPage() {
     <AuthShell
       imageSrc="https://images.unsplash.com/photo-1575553939928-d03b21323afe?w=1600&auto=format&fit=crop&q=80"
       imageAlt=""
-      kicker="Welcome back"
-      tagline="Where every match keeps the record."
+      kicker="Members"
+      tagline="Back to the table."
     >
       <div className="mb-9">
         <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-mute-2">
@@ -61,7 +61,7 @@ export default function LoginPage() {
           Welcome back.
         </h1>
         <p className="mt-3 text-[15px] leading-[1.55] text-mute">
-          Sign in to manage your tournaments and track your stats.
+          Pick up where you left off &mdash; your tournaments, your ranking, your record.
         </p>
       </div>
 
@@ -111,7 +111,7 @@ export default function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="h-12 rounded-md border-rule bg-bone/40 focus-visible:ring-navy/20 focus-visible:border-navy text-[15px]"
+            className="h-12 rounded-md border-rule bg-canvas px-4 text-[15px] tracking-[0.02em] transition-colors placeholder:text-mute-2 focus-visible:border-ink focus-visible:ring-0 focus-visible:shadow-[inset_0_-2px_0_0_var(--gold)]"
           />
         </div>
 
@@ -131,13 +131,19 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <p className="mt-8 text-[14px] text-mute">
+      <div className="mt-10 flex items-center gap-3">
+        <span aria-hidden className="h-px w-8 bg-gold/70" />
+        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-mute-2">
+          New here
+        </p>
+      </div>
+      <p className="mt-4 text-[14px] text-mute">
         Don&rsquo;t have an account?{" "}
         <Link
           href="/register"
           className="font-semibold text-ink hover:underline underline-offset-2"
         >
-          Sign up free
+          Create an account
         </Link>
       </p>
     </AuthShell>

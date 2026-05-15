@@ -1,6 +1,30 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Youtube, Twitter, Instagram, Facebook } from "lucide-react";
 import { Logo } from "./logo";
+
+// TikTok glyph (lucide doesn't ship one) — simple-icons standard path.
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+    </svg>
+  );
+}
+
+// TODO: replace `href` values with real account URLs from the social media manager.
+// Until then these point to "#" — safe inert anchors. Don't push to prod with "#" hrefs.
+const socials = [
+  { name: "Instagram", href: "#", Icon: Instagram },
+  { name: "YouTube",   href: "https://www.youtube.com/channel/UCRUvNasvOKV897b14Krh58g", Icon: Youtube },
+  { name: "TikTok",    href: "https://www.tiktok.com/@cuesportsafrica", Icon: TikTokIcon },
+  { name: "X",         href: "#", Icon: Twitter },
+  { name: "Facebook",  href: "#", Icon: Facebook },
+];
 
 const sitemap = [
   {
@@ -25,7 +49,6 @@ const sitemap = [
     links: [
       { name: "Our story", href: "/about" },
       { name: "Contact", href: "/about/contact" },
-      { name: "Customers", href: "/customers" },
     ],
   },
 ];
@@ -86,6 +109,28 @@ export function Footer() {
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </span>
             </Link>
+
+            {/* Social row — kicker label + icon set */}
+            <div className="mt-10">
+              <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-white/45 sm:text-[11px]">
+                Follow
+              </p>
+              <ul className="flex items-center gap-3">
+                {socials.map(({ name, href, Icon }) => (
+                  <li key={name}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={name}
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/55 transition-all hover:border-white/25 hover:bg-white/[0.04] hover:text-white"
+                    >
+                      <Icon className="h-4 w-4" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* Sitemap — three columns, mono-caps labels */}
