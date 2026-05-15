@@ -247,12 +247,7 @@ export default function AboutPage() {
                 </div>
               </dl>
 
-              <p className="mt-10 max-w-[58ch] text-[15px] leading-[1.7] text-ink/75">
-                Three friends from Kirinyaga County, Kenya. Built this on evenings and weekends
-                until the evenings weren&rsquo;t enough.
-              </p>
-
-              <p className="mt-6 text-[14px] leading-[1.6] text-ink/60">
+              <p className="mt-10 text-[14px] leading-[1.6] text-ink/60">
                 A small team of engineers, organizers, and players. We&rsquo;re hiring.{" "}
                 <Link
                   href="/about/contact"
