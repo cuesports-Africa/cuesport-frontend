@@ -17,7 +17,7 @@ const sitemap = [
     links: [
       { name: "Host an event", href: "/organizer" },
       { name: "Pricing", href: "/pricing" },
-      { name: "How it works", href: "/about/how-it-works" },
+      { name: "Partners", href: "/partners" },
     ],
   },
   {
