@@ -34,6 +34,7 @@ const sitemap = [
       { name: "Rankings", href: "/rankings" },
       { name: "Players", href: "/players" },
       { name: "Magazine", href: "/news" },
+      { name: "Rules", href: "/rules" },
     ],
   },
   {
