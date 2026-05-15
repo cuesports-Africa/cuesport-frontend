@@ -1,64 +1,71 @@
 import { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
+import { serverFetch } from "@/lib/api-server";
+import type { Article, ArticlesResponse } from "@/lib/api";
 import NewsClient from "./news-client";
 
+export const revalidate = 300; // 5 min — articles change slowly
+
 export const metadata: Metadata = {
-  title: "News & Updates - Tournament Coverage & Player Stories",
+  title: "The Magazine · CueSports Africa",
   description:
-    "Latest cue sport news from Africa — tournament results, player profiles, and community updates. Stay informed on pool, snooker, and billiards events.",
+    "Stories from African cue sports — match reports, player profiles, analysis, and the halls behind the names.",
   keywords: [
-    "pool tournament news Africa",
-    "snooker tournament news Africa",
-    "pool news Kenya",
-    "snooker news Kenya",
-    "cuesports news",
-    "African pool results",
-    "African snooker results",
-    "billiards news Africa",
-    "pool player stories",
-    "snooker player interviews",
-    "tournament coverage Africa",
-    "pool tournament highlights",
-    "8-ball tournament results",
-    "9-ball tournament news",
-    "cue sport news Africa",
-    "cue sport tournament results",
-    "cuesport africa",
-    "cuesports africa",
-    "billiards africa",
-    "snooker africa",
-    "pool tournament africa",
+    "cuesports africa magazine",
+    "african pool news",
+    "pool player stories africa",
+    "pool match reports kenya",
+    "cuesports africa editorial",
+    "african pool tournament",
+    "cuesports magazine",
+    "pool stories africa",
     "8 ball pool africa",
-    "African pool tournament",
-    "African billiards",
-    "cue sport tournament",
-    "pool player rankings africa",
-    "pool league africa",
+    "pool player profiles",
   ],
   openGraph: {
-    title: "News & Updates — CueSports Africa",
+    title: "The Magazine · CueSports Africa",
     description:
-      "Latest tournament coverage, player stories, and announcements from African pool.",
+      "Stories from African cue sports — match reports, player profiles, analysis, and the halls behind the names.",
     url: "https://cuesports.africa/news",
+    type: "website",
   },
   alternates: {
     canonical: "https://cuesports.africa/news",
   },
 };
 
-export default function NewsPage() {
+async function getNewsData() {
+  const [list, featured] = await Promise.all([
+    serverFetch<ArticlesResponse>("/articles?per_page=24", {
+      revalidate: 300,
+    }).catch(() => null),
+    serverFetch<{ data: Article | null }>("/articles/featured", {
+      revalidate: 300,
+    }).catch(() => null),
+  ]);
+
+  return {
+    articles: list?.data ?? [],
+    categories: list?.categories ?? [],
+    featured: featured?.data ?? null,
+  };
+}
+
+export default async function NewsPage() {
+  const { articles, categories, featured } = await getNewsData();
+
   return (
     <>
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          name: "CueSports Africa News & Updates",
+          "@type": "Blog",
+          name: "CueSports Africa Magazine",
           description:
-            "Latest tournament coverage, player stories, and announcements from African pool.",
+            "Stories from African cue sports — match reports, player profiles, analysis.",
           url: "https://cuesports.africa/news",
-          isPartOf: {
-            "@type": "WebSite",
+          publisher: {
+            "@type": "Organization",
             name: "CueSports Africa",
             url: "https://cuesports.africa",
           },
@@ -78,13 +85,17 @@ export default function NewsPage() {
             {
               "@type": "ListItem",
               position: 2,
-              name: "News",
+              name: "Magazine",
               item: "https://cuesports.africa/news",
             },
           ],
         }}
       />
-      <NewsClient />
+      <NewsClient
+        articles={articles}
+        categories={categories}
+        featured={featured}
+      />
     </>
   );
 }

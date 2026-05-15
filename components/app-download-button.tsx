@@ -3,26 +3,36 @@
 const APK_DIRECT_URL = "https://downloads.cuesports.africa/app-release.apk";
 const TRACK_URL = "https://api.cuesports.africa/api/analytics/app-downloads";
 
-export function AppDownloadButton({ children, className }: { children: React.ReactNode; className?: string }) {
+type Props = {
+  children: React.ReactNode;
+  className?: string;
+  /** Where to send the user. Defaults to the direct APK URL for backwards-compat. */
+  href?: string;
+  /** Source tag sent with the analytics beacon. */
+  source?: string;
+};
+
+export function AppDownloadButton({
+  children,
+  className,
+  href = APK_DIRECT_URL,
+  source = "hero_button",
+}: Props) {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     try {
-      const data = JSON.stringify({ source: "hero_button" });
+      const data = JSON.stringify({ source });
       if (navigator.sendBeacon) {
         navigator.sendBeacon(TRACK_URL, data);
       }
     } catch {
       // fire-and-forget
     }
-    window.location.href = APK_DIRECT_URL;
+    window.location.href = href;
   };
 
   return (
-    <a
-      href={APK_DIRECT_URL}
-      onClick={handleClick}
-      className={className}
-    >
+    <a href={href} onClick={handleClick} className={className}>
       {children}
     </a>
   );
