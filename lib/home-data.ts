@@ -1,14 +1,12 @@
 /**
  * Home page data layer — server-side fetching for the marketing landing page.
  *
- * Why /players/leaderboard (and not /players/rankings):
- *   - /players/rankings silently SWALLOWS `?gender=` and returns the same
- *     mixed roster for both calls (verified live against api.cuesports.africa).
- *   - /players/leaderboard requires a country_id but properly honours the
- *     gender filter and returns RankedPlayer-shaped rows (despite the older
- *     LeaderboardPlayer type in lib/api.ts).
- *   - We anchor to Kenya (country_id=2) because that's where the data lives
- *     today. Override via NEXT_PUBLIC_FEATURED_COUNTRY_ID if needed.
+ * Rankings: uses /players/africa-top (continental, gender-filterable).
+ *   - The endpoint returns players ranked across the entire continent within
+ *     the given gender filter; the `rank` field on each row is that continental
+ *     gender-filtered position, which is exactly what we display.
+ *   - Server-side cached on Railway (Redis hot), with our own 600s ISR layer
+ *     on top — Vercel only re-fetches every 10 minutes.
  *
  * Cadences:
  *   - Pulse (live activity): 60s revalidate
@@ -23,11 +21,6 @@ import type {
   RankedPlayer,
   RankingsResponse,
 } from "@/lib/api";
-
-// Kenya = 2 (verified via /api/locations/countries).
-const FEATURED_COUNTRY_ID = Number(
-  process.env.NEXT_PUBLIC_FEATURED_COUNTRY_ID ?? 2,
-);
 
 export type HomePulse = {
   matchesLive: number;
@@ -80,24 +73,13 @@ function composeOrigin(p: RankedPlayer): string {
   return locality || country || "—";
 }
 
-// The live API returns a few fields the older TS interface doesn't capture.
-type LiveRankedPlayer = RankedPlayer & {
-  gender_country_rank?: number;
-  country_rank?: number;
-};
-
 function mapRankings(resp: RankingsResponse | null): HomeRankingRow[] {
   if (!resp?.data) return [];
   return resp.data.slice(0, 10).map((p, i) => {
-    const live = p as LiveRankedPlayer;
-    // Prefer gender_country_rank when present (it's the position within the
-    // currently-filtered gender bucket). Fall back to overall rank, then index.
-    const rank =
-      (live.gender_country_rank && live.gender_country_rank > 0
-        ? live.gender_country_rank
-        : null) ??
-      (live.rank && live.rank > 0 ? live.rank : null) ??
-      i + 1;
+    // /players/africa-top sets `rank` to the continental position within
+    // the gender filter — display it directly. Fallback to index only as a
+    // defensive guard against an unexpected payload shape.
+    const rank = p.rank && p.rank > 0 ? p.rank : i + 1;
     return {
       rank,
       name: p.full_name || `${p.first_name} ${p.last_name}`.trim(),
@@ -114,11 +96,11 @@ export async function getHomeData(): Promise<HomeData> {
       () => null,
     ),
     serverFetch<RankingsResponse>(
-      `/players/leaderboard?country_id=${FEATURED_COUNTRY_ID}&gender=male&per_page=10`,
+      `/players/africa-top?gender=male&limit=10`,
       { revalidate: 600 },
     ).catch(() => null),
     serverFetch<RankingsResponse>(
-      `/players/leaderboard?country_id=${FEATURED_COUNTRY_ID}&gender=female&per_page=10`,
+      `/players/africa-top?gender=female&limit=10`,
       { revalidate: 600 },
     ).catch(() => null),
   ]);
@@ -136,5 +118,4 @@ export async function getHomeData(): Promise<HomeData> {
 }
 
 // TODO(backend): add `venues_active` + `countries_active` to /matches/feed.stats so the
-// Pulse band doesn't have to derive them client-side. Also formally expose `gender` on
-// the /players/rankings TypeScript client (it works at the API level already).
+// Pulse band doesn't have to derive them client-side.
