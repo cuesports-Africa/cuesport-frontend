@@ -27,9 +27,8 @@ export default function ForgotPasswordPage() {
   // Step 1
   const [email, setEmail] = useState("");
 
-  // Step 2
+  // Step 2 — code is carried through to step 3 (backend takes it on /reset-password)
   const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const [resetToken, setResetToken] = useState("");
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Step 3
@@ -87,7 +86,10 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     try {
       const res = await authApi.verifyResetCode({ email, code: fullCode });
-      setResetToken(res.token);
+      if (!res.valid) {
+        setError(res.message || "Invalid or expired code.");
+        return;
+      }
       setStep("reset");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Invalid or expired code.");
@@ -107,7 +109,7 @@ export default function ForgotPasswordPage() {
     try {
       await authApi.resetPassword({
         email,
-        token: resetToken,
+        code: code.join(""),
         password,
         password_confirmation: passwordConfirmation,
       });

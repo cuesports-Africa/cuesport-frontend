@@ -196,9 +196,9 @@ export const authApi = {
     api.post<{ message: string }>("/auth/forgot-password", data),
 
   verifyResetCode: (data: { email: string; code: string }) =>
-    api.post<{ message: string; token: string }>("/auth/verify-reset-code", data),
+    api.post<{ message: string; valid: boolean }>("/auth/verify-reset-code", data),
 
-  resetPassword: (data: { email: string; token: string; password: string; password_confirmation: string }) =>
+  resetPassword: (data: { email: string; code: string; password: string; password_confirmation: string }) =>
     api.post<{ message: string }>("/auth/reset-password", data),
 };
 
