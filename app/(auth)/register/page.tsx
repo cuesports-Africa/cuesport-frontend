@@ -293,19 +293,11 @@ export default function RegisterPage() {
         })}
       </ol>
 
-      {/* Headline + lead */}
+      {/* Headline */}
       <div className="mb-9">
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-mute-2">
-          Create account
-        </p>
-        <h1 className="mt-3 text-[clamp(1.875rem,3vw,2.5rem)] font-extrabold leading-[1.05] tracking-[-0.025em] text-ink">
+        <h1 className="text-[clamp(1.875rem,3vw,2.5rem)] font-extrabold leading-[1.05] tracking-[-0.025em] text-ink">
           {step === 1 ? "Start your account." : "Tell us about you."}
         </h1>
-        <p className="mt-3 text-[15px] leading-[1.55] text-mute">
-          {step === 1
-            ? "Your details for signing in."
-            : "A bit of profile information to get you ranked."}
-        </p>
       </div>
 
       {(error || stepError) && (
@@ -363,9 +355,6 @@ export default function RegisterPage() {
               onChange={(e) => setNickname(e.target.value)}
               className={inputClass}
             />
-            <p className="mt-1.5 text-[11px] leading-[1.4] text-mute">
-              Your display name (2–30 characters). Must be unique.
-            </p>
           </div>
 
           <div>

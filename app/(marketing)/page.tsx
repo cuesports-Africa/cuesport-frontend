@@ -167,7 +167,7 @@ export default async function Home() {
                 Africa&rsquo;s home of cue sports
               </p>
               <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/55 nums-tabular">
-                2,000+ organizers · 46 counties · 1M+ players
+                2,000+ organizers · 46 countries · 1M+ players
               </p>
             </div>
           </div>

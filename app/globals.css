@@ -127,6 +127,7 @@
     font-weight: 400;
     text-wrap: pretty;
     position: relative;
+    overflow-x: hidden;
   }
 
   /* Radial dot grain — invisible but felt */
