@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowUpRight, Loader2 } from "lucide-react";
+import { ArrowUpRight, Loader2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +35,8 @@ export default function ForgotPasswordPage() {
   // Step 3
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   async function handleSendCode(e: React.FormEvent) {
     e.preventDefault();
@@ -292,32 +294,60 @@ export default function ForgotPasswordPage() {
             <Label htmlFor="password" className={labelClass}>
               New password
             </Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={inputClass}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`${inputClass} pr-11`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute right-0 top-0 h-full inline-flex items-center justify-center w-11 text-mute-2 hover:text-ink transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
           </div>
 
           <div>
             <Label htmlFor="password_confirmation" className={labelClass}>
               Confirm password
             </Label>
-            <Input
-              id="password_confirmation"
-              type="password"
-              placeholder="••••••••"
-              required
-              minLength={8}
-              value={passwordConfirmation}
-              onChange={(e) => setPasswordConfirmation(e.target.value)}
-              className={inputClass}
-            />
+            <div className="relative">
+              <Input
+                id="password_confirmation"
+                type={showConfirm ? "text" : "password"}
+                placeholder="••••••••"
+                required
+                minLength={8}
+                value={passwordConfirmation}
+                onChange={(e) => setPasswordConfirmation(e.target.value)}
+                className={`${inputClass} pr-11`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm((v) => !v)}
+                aria-label={showConfirm ? "Hide password" : "Show password"}
+                className="absolute right-0 top-0 h-full inline-flex items-center justify-center w-11 text-mute-2 hover:text-ink transition-colors"
+              >
+                {showConfirm ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
           </div>
 
           <Button
