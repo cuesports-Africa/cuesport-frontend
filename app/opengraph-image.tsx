@@ -1,7 +1,5 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
-
 export const alt = "CueSports Africa - Africa's Premier Cue Sport Platform";
 export const size = {
   width: 1200,

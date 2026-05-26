@@ -1,0 +1,46 @@
+name: Deploy to Cloudflare
+
+# CI on every PR (build must pass), CD on push to main (build + deploy).
+# Runs on Linux — avoids the OpenNext/@vercel/og bundling bug seen on Windows.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (OpenNext → Cloudflare Worker)
+        run: npx opennextjs-cloudflare build
+        env:
+          # NEXT_PUBLIC_* are inlined into the client bundle at build time.
+          # They are public values, so they live as repo Variables (not Secrets).
+          NEXT_PUBLIC_BACKEND_URL: ${{ vars.NEXT_PUBLIC_BACKEND_URL }}
+          NEXT_PUBLIC_PUSHER_APP_KEY: ${{ vars.NEXT_PUBLIC_PUSHER_APP_KEY }}
+          NEXT_PUBLIC_PUSHER_APP_CLUSTER: ${{ vars.NEXT_PUBLIC_PUSHER_APP_CLUSTER }}
+
+      - name: Deploy to Cloudflare Workers
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: npx wrangler deploy
+        env:
+          # Account ID lives in wrangler.jsonc; only the token is secret.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

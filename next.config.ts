@@ -1,7 +1,13 @@
 import type { NextConfig } from "next";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const nextConfig: NextConfig = {
   images: {
+    // Cloudflare Workers has no built-in Next image optimizer. Our images come
+    // from Unsplash/Cloudinary, which already resize via URL params (w=, q=,
+    // auto=format), so serving them unoptimized loses almost nothing and keeps
+    // the deploy free (no Cloudflare Images dependency).
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -14,7 +20,6 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
-    formats: ['image/avif', 'image/webp'],
   },
   async redirects() {
     return [
@@ -58,3 +63,6 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+// Enables Cloudflare bindings during `next dev` (no-op in production builds).
+initOpenNextCloudflareForDev();
