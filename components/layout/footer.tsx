@@ -72,7 +72,7 @@ export function Footer() {
       >
         <span
           className="block whitespace-nowrap font-extrabold leading-[0.8] tracking-[-0.06em] text-white/[0.04]"
-          style={{ fontSize: "clamp(12rem, 27vw, 24rem)" }}
+          style={{ fontSize: "clamp(5rem, 16vw, 16rem)" }}
         >
           CueSports
         </span>
