@@ -3,13 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get("host") || "";
 
-  // Rewrite advertise.cuesports.africa/* → /advertise/*
-  if (hostname.startsWith("advertise.")) {
-    const url = request.nextUrl.clone();
-    url.pathname = `/advertise${url.pathname}`;
-    return NextResponse.rewrite(url);
-  }
-
   // Rewrite organizer.cuesports.africa/* → /organizer/*
   if (hostname.startsWith("organizer.")) {
     const url = request.nextUrl.clone();
