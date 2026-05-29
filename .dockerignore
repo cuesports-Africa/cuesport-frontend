@@ -1,0 +1,56 @@
+# Keep Docker build context lean — every byte here speeds up uploads to
+# the Railway builder and avoids leaking secrets into image layers.
+
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Node
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Next.js / build artifacts
+.next
+out
+build
+
+# Secrets & local env
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+*.swp
+
+# Docs / non-runtime files
+README.md
+CHANGELOG.md
+LICENSE
+docs
+
+# Vercel / Cloudflare leftovers (in case any reappear)
+.vercel
+.open-next
+.wrangler
+wrangler.jsonc
+open-next.config.ts
+cloudflare-env.d.ts
+
+# Testing / coverage
+coverage
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts

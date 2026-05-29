@@ -1,12 +1,14 @@
 import type { NextConfig } from "next";
-import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const nextConfig: NextConfig = {
+  // Standalone server output — minimal runtime for Docker on Railway
+  // (~150 MB final image vs ~1 GB for a full node_modules copy).
+  output: "standalone",
   images: {
-    // Cloudflare Workers has no built-in Next image optimizer. Our images come
-    // from Unsplash/Cloudinary, which already resize via URL params (w=, q=,
-    // auto=format), so serving them unoptimized loses almost nothing and keeps
-    // the deploy free (no Cloudflare Images dependency).
+    // Unsplash & Cloudinary already optimize via URL params (w=, q=,
+    // auto=format) — routing through next/image would just duplicate that
+    // work on the Railway container (CPU $$). Local /public JPGs are
+    // pre-compressed. Net: leaner container, no `sharp` runtime dep.
     unoptimized: true,
     remotePatterns: [
       {
@@ -63,6 +65,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-
-// Enables Cloudflare bindings during `next dev` (no-op in production builds).
-initOpenNextCloudflareForDev();
