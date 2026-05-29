@@ -40,8 +40,8 @@ export function OrganizerSidebar() {
   }
 
   const orgName = user.organizer_profile?.organization_name || "Organiser";
-  const firstName = user.first_name || "";
-  const lastName = user.last_name || "";
+  const firstName = user.player_profile?.first_name || "";
+  const lastName = user.player_profile?.last_name || "";
   const initials =
     `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || "OR";
 
