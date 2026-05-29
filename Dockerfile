@@ -19,7 +19,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-RUN --mount=type=cache,target=/root/.npm \
+RUN --mount=type=cache,id=npm,target=/root/.npm \
     npm ci --include=dev --no-audit --no-fund
 
 
